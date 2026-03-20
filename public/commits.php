@@ -74,6 +74,7 @@ try {
         <nav class="nav">
             <a class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/') ?>">首頁</a>
             <a class="<?= $currentPage === 'commits' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits 統計</a>
+            <a class="<?= $currentPage === 'settings' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">設定</a>
         </nav>
     </div>
 
@@ -89,19 +90,19 @@ try {
     <?php if ($stats && $stats['ok']): ?>
         <section class="hero">
             <div class="card">
-                <div class="metric"><?= htmlspecialchars((string) $stats['total_commits']) ?></div>
-                <div class="label">總和 commits</div>
+                <div class="metric"><?= htmlspecialchars((string) $stats['repo_count']) ?></div>
+                <div class="label">Repositories</div>
                 <div class="small">帳號：<?= htmlspecialchars((string) $stats['username']) ?></div>
             </div>
             <div class="card">
-                <div class="metric"><?= htmlspecialchars((string) $stats['repo_count']) ?></div>
-                <div class="label">納入統計 repos 數</div>
+                <div class="metric"><?= htmlspecialchars((string) $stats['total_commits']) ?></div>
+                <div class="label">總 Commits</div>
                 <div class="small">來源：公開 repositories</div>
             </div>
             <div class="card">
-                <div class="metric"><?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d', strtotime((string) $stats['latest_commit_at'])) : '--') ?></div>
-                <div class="label">最新 commit 日期</div>
-                <div class="small">依 GitHub API 即時讀取</div>
+                <div class="metric"><?= htmlspecialchars((string) $stats['top10_total_commits']) ?></div>
+                <div class="label">前10合計</div>
+                <div class="small">前 10 名 repositories commits 加總</div>
             </div>
         </section>
 
@@ -138,10 +139,13 @@ try {
                 </tbody>
             </table>
         </section>
+        <section class="card" style="margin-top: 24px;">
+            <p class="small" style="margin: 0;">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></p>
+        </section>
     <?php elseif ($stats): ?>
         <section class="card">
             <p class="small" style="margin: 0;"><?= htmlspecialchars((string) $stats['message']) ?></p>
-            <p class="small" style="margin-bottom: 0;">請在 <code>config.php</code> 的 <code>github.username</code> 填入目標 GitHub 帳號，例如 <code>goldshoot0720</code>。</p>
+            <p class="small" style="margin-bottom: 0;">請先確認 <code>config.php</code> 的 <code>github.username</code>，若遇到 GitHub 403，請到「設定」頁儲存 <code>GITHUB_TOKEN</code>。</p>
         </section>
     <?php endif; ?>
 </div>

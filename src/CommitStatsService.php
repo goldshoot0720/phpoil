@@ -27,6 +27,7 @@ final class CommitStatsService
                 'username' => null,
                 'repo_count' => 0,
                 'total_commits' => 0,
+                'top10_total_commits' => 0,
                 'top_repositories' => [],
                 'latest_commit_at' => null,
             ];
@@ -72,6 +73,11 @@ final class CommitStatsService
         }
 
         usort($repoStats, static fn (array $left, array $right): int => $right['commits'] <=> $left['commits']);
+        $topRepositories = array_slice($repoStats, 0, 10);
+        $top10TotalCommits = array_sum(array_map(
+            static fn (array $repo): int => (int) $repo['commits'],
+            $topRepositories
+        ));
 
         return [
             'ok' => true,
@@ -79,7 +85,8 @@ final class CommitStatsService
             'username' => $username,
             'repo_count' => count($repoStats),
             'total_commits' => $totalCommits,
-            'top_repositories' => array_slice($repoStats, 0, 10),
+            'top10_total_commits' => $top10TotalCommits,
+            'top_repositories' => $topRepositories,
             'latest_commit_at' => $latestCommitAt,
         ];
     }
