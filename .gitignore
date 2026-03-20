@@ -1,6 +1,7 @@
 storage/*.sqlite
 storage/*.log
 storage/app_settings.json
+storage/commit_stats_cache.json
 stdout
 /config.php
 /storage/

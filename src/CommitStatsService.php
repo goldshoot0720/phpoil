@@ -9,28 +9,44 @@ use RuntimeException;
 final class CommitStatsService
 {
     private const PER_PAGE = 100;
+    private const CACHE_TTL_SECONDS = 1800;
 
     public function __construct(
-        private readonly array $config
+        private readonly array $config,
+        private readonly ?CommitStatsCacheRepository $cacheRepository = null
     ) {
     }
 
-    public function fetchSummary(): array
+    public function fetchSummary(bool $forceRefresh = false): array
     {
+        if (!$forceRefresh && $this->cacheRepository !== null) {
+            $cached = $this->cacheRepository->load();
+            if ($this->isCacheValid($cached)) {
+                return $cached['data'];
+            }
+        }
+
         $github = $this->config['github'] ?? [];
         $username = trim((string) ($github['username'] ?? ''));
 
         if ($username === '') {
-            return [
+            $emptyResult = [
                 'ok' => false,
                 'message' => '尚未設定 GitHub 使用者名稱，請先在 config.php 填入 username。',
                 'username' => null,
                 'repo_count' => 0,
+                'counted_repo_count' => 0,
                 'total_commits' => 0,
                 'top10_total_commits' => 0,
                 'top_repositories' => [],
                 'latest_commit_at' => null,
+                'updated_at' => date('c'),
+                'from_cache' => false,
             ];
+
+            $this->storeCache($emptyResult);
+
+            return $emptyResult;
         }
 
         $repositories = $this->fetchAllRepositories($username);
@@ -77,7 +93,7 @@ final class CommitStatsService
             $topRepositories
         ));
 
-        return [
+        $result = [
             'ok' => true,
             'message' => null,
             'username' => $username,
@@ -87,7 +103,13 @@ final class CommitStatsService
             'top10_total_commits' => $top10TotalCommits,
             'top_repositories' => $topRepositories,
             'latest_commit_at' => $latestCommitAt,
+            'updated_at' => date('c'),
+            'from_cache' => false,
         ];
+
+        $this->storeCache($result);
+
+        return $result;
     }
 
     private function fetchAllRepositories(string $username): array
@@ -235,5 +257,26 @@ final class CommitStatsService
         $linkHeader = $headers['link'] ?? null;
 
         return is_string($linkHeader) && str_contains($linkHeader, 'rel="next"');
+    }
+
+    private function isCacheValid(?array $cached): bool
+    {
+        if (!is_array($cached) || !isset($cached['saved_at'], $cached['data']) || !is_array($cached['data'])) {
+            return false;
+        }
+
+        return (time() - (int) $cached['saved_at']) < self::CACHE_TTL_SECONDS;
+    }
+
+    private function storeCache(array $result): void
+    {
+        if ($this->cacheRepository === null) {
+            return;
+        }
+
+        $this->cacheRepository->save([
+            'saved_at' => time(),
+            'data' => $result,
+        ]);
     }
 }

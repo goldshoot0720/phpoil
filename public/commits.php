@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../src/bootstrap.php';
 
+use OilApp\CommitStatsCacheRepository;
 use OilApp\CommitStatsService;
 use OilApp\SettingsRepository;
 
@@ -11,17 +12,23 @@ $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $basePath = $scriptDir === '/' || $scriptDir === '.' ? '' : rtrim($scriptDir, '/');
 $currentPage = 'commits';
 $settingsRepository = new SettingsRepository(__DIR__ . '/../storage/app_settings.json');
+$cacheRepository = new CommitStatsCacheRepository(__DIR__ . '/../storage/commit_stats_cache.json');
 
 $stats = null;
 $error = null;
 $message = null;
+$forceRefresh = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save';
 
     try {
-        if ($action === 'clear') {
+        if ($action === 'refresh') {
+            $forceRefresh = true;
+            $message = '已重新抓取 GitHub commits 統計。';
+        } elseif ($action === 'clear') {
             $settingsRepository->clearGithubToken();
+            $cacheRepository->clear();
             $message = 'GITHUB_TOKEN 已清除。';
         } else {
             $token = trim((string) ($_POST['github_token'] ?? ''));
@@ -30,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $settingsRepository->saveGithubToken($token);
+            $cacheRepository->clear();
+            $forceRefresh = true;
             $message = 'GITHUB_TOKEN 已儲存，現在可以重新抓取 Commits 統計。';
         }
 
@@ -40,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-    $stats = (new CommitStatsService($config))->fetchSummary();
+    $stats = (new CommitStatsService($config, $cacheRepository))->fetchSummary($forceRefresh);
 } catch (Throwable $exception) {
     $error = $exception->getMessage();
 }
@@ -121,6 +130,8 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         .button.primary { background: var(--ink); color: #fff; }
         .button.secondary { background: rgba(31, 42, 48, 0.08); color: var(--ink); }
         .token-status { margin-top: 12px; font-weight: 700; color: var(--accent); }
+        .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+        .toolbar-form { margin: 0; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); vertical-align: top; }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -186,6 +197,14 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
     </section>
 
     <?php if ($stats && $stats['ok']): ?>
+        <section class="toolbar">
+            <div class="small">
+                最後更新時間：<?= htmlspecialchars($stats['updated_at'] ? date('Y-m-d H:i:s', strtotime((string) $stats['updated_at'])) : '--') ?>
+            </div>
+            <form class="toolbar-form" method="post">
+                <button class="button primary" type="submit" name="action" value="refresh">重新抓取</button>
+            </form>
+        </section>
         <section class="hero">
             <div class="card">
                 <div class="metric"><?= htmlspecialchars((string) $stats['repo_count']) ?></div>
