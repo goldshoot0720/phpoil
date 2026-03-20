@@ -24,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'refresh') {
+            $cacheRepository->clear();
             $forceRefresh = true;
-            $message = '已重新抓取 GitHub commits 統計。';
+            $message = '已先清除快取，並重新抓取 GitHub commits 統計。';
         } elseif ($action === 'clear') {
             $settingsRepository->clearGithubToken();
             $cacheRepository->clear();
@@ -205,7 +206,7 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
                 最後更新時間：<?= htmlspecialchars($stats['updated_at'] ? date('Y-m-d H:i:s', strtotime((string) $stats['updated_at'])) : '--') ?>
             </div>
             <form class="toolbar-form" method="post">
-                <button class="button primary" type="submit" name="action" value="refresh">重新抓取</button>
+                <button class="button primary" type="submit" name="action" value="refresh">清除快取並重新抓取</button>
             </form>
         </section>
         <section class="hero">
@@ -229,8 +230,9 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         <section class="card" style="margin-bottom: 24px;">
             <h2 style="margin-top: 0;">統計過程</h2>
             <ol class="process-list">
-                <li>先分頁抓取 `<?= htmlspecialchars((string) $stats['username']) ?>` 底下全部 repositories。</li>
-                <li>再逐一讀取每個 repository 的預設分支 commits 數。</li>
+                <li>使用者按下「清除快取並重新抓取」後，系統會先清除舊快取。</li>
+                <li>再分頁抓取 `<?= htmlspecialchars((string) $stats['username']) ?>` 底下全部 repositories。</li>
+                <li>接著逐一讀取每個 repository 的預設分支 commits 數。</li>
                 <li>把全部 repository 的 commits 加總成 `總 Commits`。</li>
                 <li>依 commits 由高到低排序後，取前 10 名再加總成 `前10合計`。</li>
             </ol>
