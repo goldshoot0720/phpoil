@@ -17,7 +17,7 @@ final class CommitStatsService
     ) {
     }
 
-    public function fetchSummary(bool $forceRefresh = false): array
+    public function fetchSummary(bool $forceRefresh = false, ?callable $progressCallback = null): array
     {
         if (!$forceRefresh && $this->cacheRepository !== null) {
             $cached = $this->cacheRepository->load();
@@ -53,11 +53,18 @@ final class CommitStatsService
         }
 
         $repositories = $this->fetchAllRepositories($username);
+        $totalRepositories = count($repositories);
+        $this->emitProgress($progressCallback, [
+            'stage' => 'repositories_loaded',
+            'username' => $username,
+            'repo_count' => $totalRepositories,
+            'message' => sprintf('已取得 %d 個 repositories，開始逐一抓取 commits。', $totalRepositories),
+        ]);
 
         $repoStats = [];
         $totalCommits = 0;
         $latestCommitAt = null;
-        $totalRepositories = count($repositories);
+        $processedRepositories = 0;
 
         foreach ($repositories as $repository) {
             $name = trim((string) ($repository['name'] ?? ''));
@@ -68,6 +75,16 @@ final class CommitStatsService
             $defaultBranch = trim((string) ($repository['default_branch'] ?? 'main'));
             $commitSummary = $this->fetchRepositoryCommitCount($username, $name, $defaultBranch);
             if ($commitSummary === null) {
+                $processedRepositories++;
+                $this->emitProgress($progressCallback, [
+                    'stage' => 'repository_skipped',
+                    'current' => $processedRepositories,
+                    'total' => $totalRepositories,
+                    'repository' => $name,
+                    'message' => sprintf('略過 %s，這個 repository 目前沒有可統計的 commits。', $name),
+                    'total_commits' => $totalCommits,
+                    'top10_total_commits' => $this->calculateTop10Total($repoStats),
+                ]);
                 continue;
             }
 
@@ -87,6 +104,17 @@ final class CommitStatsService
             ) {
                 $latestCommitAt = $commitSummary['latest_commit_at'];
             }
+
+            $processedRepositories++;
+            $this->emitProgress($progressCallback, [
+                'stage' => 'repository_processed',
+                'current' => $processedRepositories,
+                'total' => $totalRepositories,
+                'repository' => $name,
+                'message' => sprintf('統計進度 %d/%d：正在讀取 %s commits...', $processedRepositories, $totalRepositories, $name),
+                'total_commits' => $totalCommits,
+                'top10_total_commits' => $this->calculateTop10Total($repoStats),
+            ]);
         }
 
         usort($repoStats, static fn (array $left, array $right): int => $right['commits'] <=> $left['commits']);
@@ -281,5 +309,26 @@ final class CommitStatsService
             'saved_at' => time(),
             'data' => $result,
         ]);
+    }
+
+    private function emitProgress(?callable $progressCallback, array $payload): void
+    {
+        if ($progressCallback !== null) {
+            $progressCallback($payload);
+        }
+    }
+
+    private function calculateTop10Total(array $repoStats): int
+    {
+        if ($repoStats === []) {
+            return 0;
+        }
+
+        usort($repoStats, static fn (array $left, array $right): int => $right['commits'] <=> $left['commits']);
+
+        return array_sum(array_map(
+            static fn (array $repo): int => (int) $repo['commits'],
+            array_slice($repoStats, 0, 10)
+        ));
     }
 }

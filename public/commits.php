@@ -14,6 +14,40 @@ $currentPage = 'commits';
 $settingsRepository = new SettingsRepository(__DIR__ . '/../storage/app_settings.json');
 $cacheRepository = new CommitStatsCacheRepository(__DIR__ . '/../storage/commit_stats_cache.json');
 
+if (isset($_GET['stream']) && $_GET['stream'] === 'refresh') {
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache');
+    header('X-Accel-Buffering: no');
+
+    $emit = static function (string $event, array $payload): void {
+        echo 'event: ' . $event . "\n";
+        echo 'data: ' . json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+        @ob_flush();
+        @flush();
+    };
+
+    try {
+        $cacheRepository->clear();
+        $emit('progress', [
+            'stage' => 'cache_cleared',
+            'message' => '已清除舊快取，開始重新抓取 GitHub commits 統計。',
+        ]);
+
+        $stats = (new CommitStatsService($config, $cacheRepository))->fetchSummary(
+            true,
+            static function (array $payload) use ($emit): void {
+                $emit('progress', $payload);
+            }
+        );
+
+        $emit('done', $stats);
+    } catch (Throwable $exception) {
+        $emit('error', ['message' => $exception->getMessage()]);
+    }
+
+    exit;
+}
+
 $stats = null;
 $error = null;
 $message = null;
@@ -136,6 +170,12 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         .process-list { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.8; }
         .process-meta { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 18px; }
         .process-pill { padding: 12px 14px; border-radius: 16px; background: rgba(31, 42, 48, 0.05); color: var(--ink); font-weight: 700; }
+        .live-progress { margin-bottom: 24px; border: 1px solid rgba(26, 127, 100, 0.16); }
+        .progress-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+        .progress-line { font-size: 1rem; font-weight: 700; color: var(--ink); }
+        .progress-sub { color: var(--muted); font-size: 0.94rem; line-height: 1.7; }
+        .progress-bar { width: 100%; height: 12px; border-radius: 999px; background: rgba(31, 42, 48, 0.08); overflow: hidden; margin: 12px 0 16px; }
+        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #1a7f64, #49b58f); transition: width 0.25s ease; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); vertical-align: top; }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -195,6 +235,18 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         </section>
     <?php endif; ?>
 
+    <section id="liveProgress" class="card live-progress" style="display: none;">
+        <div class="progress-head">
+            <h2 style="margin: 0;">抓取過程</h2>
+            <div id="liveUpdatedAt" class="small">狀態：等待重新抓取</div>
+        </div>
+        <div id="liveMessage" class="progress-line">按下「清除快取並重新抓取」後，這裡會顯示即時進度。</div>
+        <div class="progress-bar">
+            <div id="liveProgressBar" class="progress-bar-fill"></div>
+        </div>
+        <div id="liveSubMessage" class="progress-sub">尚未開始。</div>
+    </section>
+
     <section class="card" style="margin-bottom: 24px;">
         <h1 style="margin: 0 0 12px;">Commits 統計</h1>
         <p class="small">這個頁面會透過 GitHub API 分頁讀取指定 GitHub 帳號底下的全部 repositories，統計全部 repos 的 commits 總和，並列出 commits 數最高的前 10 名。</p>
@@ -203,25 +255,23 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
     <?php if ($stats && $stats['ok']): ?>
         <section class="toolbar">
             <div class="small">
-                最後更新時間：<?= htmlspecialchars($stats['updated_at'] ? date('Y-m-d H:i:s', strtotime((string) $stats['updated_at'])) : '--') ?>
+                <span id="updatedAtLabel">最後更新時間：<?= htmlspecialchars($stats['updated_at'] ? date('Y-m-d H:i:s', strtotime((string) $stats['updated_at'])) : '--') ?></span>
             </div>
-            <form class="toolbar-form" method="post">
-                <button class="button primary" type="submit" name="action" value="refresh">清除快取並重新抓取</button>
-            </form>
+            <button id="refreshButton" class="button primary" type="button">清除快取並重新抓取</button>
         </section>
         <section class="hero">
             <div class="card">
-                <div class="metric"><?= htmlspecialchars((string) $stats['repo_count']) ?></div>
+                <div id="repoCountMetric" class="metric"><?= htmlspecialchars((string) $stats['repo_count']) ?></div>
                 <div class="label">Repositories</div>
-                <div class="small">帳號：<?= htmlspecialchars((string) $stats['username']) ?></div>
+                <div id="usernameLabel" class="small">帳號：<?= htmlspecialchars((string) $stats['username']) ?></div>
             </div>
             <div class="card">
-                <div class="metric"><?= htmlspecialchars((string) $stats['total_commits']) ?></div>
+                <div id="totalCommitsMetric" class="metric"><?= htmlspecialchars((string) $stats['total_commits']) ?></div>
                 <div class="label">總 Commits</div>
-                <div class="small">有 commit 的 repos：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
+                <div id="countedRepoLabel" class="small">有 commit 的 repos：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
             </div>
             <div class="card">
-                <div class="metric"><?= htmlspecialchars((string) $stats['top10_total_commits']) ?></div>
+                <div id="top10Metric" class="metric"><?= htmlspecialchars((string) $stats['top10_total_commits']) ?></div>
                 <div class="label">前10合計</div>
                 <div class="small">前 10 名 repositories commits 加總</div>
             </div>
@@ -237,10 +287,10 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
                 <li>依 commits 由高到低排序後，取前 10 名再加總成 `前10合計`。</li>
             </ol>
             <div class="process-meta">
-                <div class="process-pill">本次抓取 repositories：<?= htmlspecialchars((string) $stats['repo_count']) ?></div>
-                <div class="process-pill">納入 commits 統計：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
-                <div class="process-pill">資料來源：<?= htmlspecialchars($stats['from_cache'] ? '快取結果' : '即時抓取') ?></div>
-                <div class="process-pill">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></div>
+                <div id="processRepoCount" class="process-pill">本次抓取 repositories：<?= htmlspecialchars((string) $stats['repo_count']) ?></div>
+                <div id="processCountedRepos" class="process-pill">納入 commits 統計：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
+                <div id="processSource" class="process-pill">資料來源：<?= htmlspecialchars($stats['from_cache'] ? '快取結果' : '即時抓取') ?></div>
+                <div id="processLatestCommit" class="process-pill">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></div>
             </div>
         </section>
 
@@ -256,7 +306,7 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
                     <th>最新提交</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="topRepositoriesBody">
                 <?php foreach ($stats['top_repositories'] as $index => $repo): ?>
                     <tr>
                         <td>
@@ -278,7 +328,7 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
             </table>
         </section>
         <section class="card" style="margin-top: 24px;">
-            <p class="small" style="margin: 0;">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></p>
+            <p id="latestCommitDateFooter" class="small" style="margin: 0;">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></p>
         </section>
     <?php elseif ($stats): ?>
         <section class="card">
@@ -287,5 +337,149 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         </section>
     <?php endif; ?>
 </div>
+<script>
+    const refreshButton = document.getElementById('refreshButton');
+    const liveProgress = document.getElementById('liveProgress');
+    const liveUpdatedAt = document.getElementById('liveUpdatedAt');
+    const liveMessage = document.getElementById('liveMessage');
+    const liveSubMessage = document.getElementById('liveSubMessage');
+    const liveProgressBar = document.getElementById('liveProgressBar');
+
+    const repoCountMetric = document.getElementById('repoCountMetric');
+    const totalCommitsMetric = document.getElementById('totalCommitsMetric');
+    const top10Metric = document.getElementById('top10Metric');
+    const usernameLabel = document.getElementById('usernameLabel');
+    const countedRepoLabel = document.getElementById('countedRepoLabel');
+    const updatedAtLabel = document.getElementById('updatedAtLabel');
+    const processRepoCount = document.getElementById('processRepoCount');
+    const processCountedRepos = document.getElementById('processCountedRepos');
+    const processSource = document.getElementById('processSource');
+    const processLatestCommit = document.getElementById('processLatestCommit');
+    const latestCommitDateFooter = document.getElementById('latestCommitDateFooter');
+    const topRepositoriesBody = document.getElementById('topRepositoriesBody');
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function formatDateTime(value) {
+        if (!value) return '--';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    }
+
+    function formatShortDateTime(value) {
+        if (!value) return '--';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function renderTopRepositories(repositories) {
+        if (!topRepositoriesBody) return;
+        topRepositoriesBody.innerHTML = repositories.map((repo, index) => {
+            const nameCell = repo.html_url
+                ? `<a class="commit-link" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(repo.full_name)}</a>`
+                : escapeHtml(repo.full_name);
+
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${nameCell}</td>
+                    <td>${escapeHtml(repo.commits)}</td>
+                    <td>${escapeHtml(repo.default_branch)}</td>
+                    <td>${escapeHtml(formatShortDateTime(repo.latest_commit_at))}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function updateSummary(stats) {
+        if (!stats) return;
+        if (repoCountMetric) repoCountMetric.textContent = stats.repo_count ?? '--';
+        if (totalCommitsMetric) totalCommitsMetric.textContent = stats.total_commits ?? '--';
+        if (top10Metric) top10Metric.textContent = stats.top10_total_commits ?? '--';
+        if (usernameLabel) usernameLabel.textContent = `帳號：${stats.username ?? '--'}`;
+        if (countedRepoLabel) countedRepoLabel.textContent = `有 commit 的 repos：${stats.counted_repo_count ?? '--'}`;
+        if (updatedAtLabel) updatedAtLabel.textContent = `最後更新時間：${formatDateTime(stats.updated_at)}`;
+        if (processRepoCount) processRepoCount.textContent = `本次抓取 repositories：${stats.repo_count ?? '--'}`;
+        if (processCountedRepos) processCountedRepos.textContent = `納入 commits 統計：${stats.counted_repo_count ?? '--'}`;
+        if (processSource) processSource.textContent = `資料來源：${stats.from_cache ? '快取結果' : '即時抓取'}`;
+        if (processLatestCommit) processLatestCommit.textContent = `最新 commit 日期：${formatShortDateTime(stats.latest_commit_at)}`;
+        if (latestCommitDateFooter) latestCommitDateFooter.textContent = `最新 commit 日期：${formatShortDateTime(stats.latest_commit_at)}`;
+        if (Array.isArray(stats.top_repositories)) renderTopRepositories(stats.top_repositories);
+    }
+
+    if (refreshButton) {
+        refreshButton.addEventListener('click', () => {
+            refreshButton.disabled = true;
+            liveProgress.style.display = 'block';
+            liveUpdatedAt.textContent = '狀態：準備中';
+            liveMessage.textContent = '正在清除快取並準備重新抓取...';
+            liveSubMessage.textContent = '請稍候，系統會逐一顯示目前進度。';
+            liveProgressBar.style.width = '0%';
+
+            const source = new EventSource('<?= htmlspecialchars(($basePath ?: '') . '/commits.php?stream=refresh', ENT_QUOTES) ?>');
+
+            source.addEventListener('progress', (event) => {
+                const payload = JSON.parse(event.data);
+                liveUpdatedAt.textContent = '狀態：抓取中';
+                liveMessage.textContent = payload.message || '正在抓取...';
+
+                if (payload.stage === 'cache_cleared') {
+                    liveSubMessage.textContent = '已先清除快取，接著開始重新抓取 GitHub commits 資料。';
+                    liveProgressBar.style.width = '2%';
+                    return;
+                }
+
+                const current = Number(payload.current || 0);
+                const total = Number(payload.total || payload.repo_count || 0);
+                const percent = total > 0 ? Math.max(3, Math.round((current / total) * 100)) : 0;
+                liveProgressBar.style.width = `${percent}%`;
+                liveSubMessage.textContent = total > 0
+                    ? `目前進度 ${current}/${total}，正在處理 ${payload.repository || 'repository'}，累計 commits ${payload.total_commits || 0}。`
+                    : (payload.message || '正在抓取中...');
+
+                if (repoCountMetric && total > 0) repoCountMetric.textContent = `${current}/${total}`;
+                if (totalCommitsMetric && payload.total_commits !== undefined) totalCommitsMetric.textContent = payload.total_commits;
+                if (top10Metric && payload.top10_total_commits !== undefined) top10Metric.textContent = payload.top10_total_commits;
+            });
+
+            source.addEventListener('done', (event) => {
+                const payload = JSON.parse(event.data);
+                updateSummary(payload);
+                liveUpdatedAt.textContent = `狀態：完成`;
+                liveMessage.textContent = '已完成快取清除與 GitHub commits 重新抓取。';
+                liveSubMessage.textContent = `最後更新時間：${formatDateTime(payload.updated_at)}`;
+                liveProgressBar.style.width = '100%';
+                refreshButton.disabled = false;
+                source.close();
+            });
+
+            source.addEventListener('error', (event) => {
+                if (event.data) {
+                    const payload = JSON.parse(event.data);
+                    liveUpdatedAt.textContent = '狀態：失敗';
+                    liveMessage.textContent = '重新抓取失敗。';
+                    liveSubMessage.textContent = payload.message || '請稍後再試。';
+                } else {
+                    liveUpdatedAt.textContent = '狀態：中斷';
+                    liveMessage.textContent = '抓取流程已中斷。';
+                    liveSubMessage.textContent = '請檢查 GitHub Token 或網路狀態後再試一次。';
+                }
+                refreshButton.disabled = false;
+                source.close();
+            });
+        });
+    }
+</script>
 </body>
 </html>
