@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+$config = require __DIR__ . '/../config.php';
+
+date_default_timezone_set($config['timezone']);
+ini_set('default_charset', 'UTF-8');
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding('UTF-8');
+}
+
+spl_autoload_register(static function (string $class): void {
+    $prefix = 'OilApp\\';
+    if (!str_starts_with($class, $prefix)) {
+        return;
+    }
+
+    $relativeClass = substr($class, strlen($prefix));
+    $file = __DIR__ . '/' . str_replace('\\', '/', $relativeClass) . '.php';
+
+    if (is_file($file)) {
+        require $file;
+    }
+});
