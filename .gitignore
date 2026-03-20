@@ -2,3 +2,10 @@ storage/*.sqlite
 storage/*.log
 storage/app_settings.json
 stdout
+/config.php
+/storage/
+/stdout
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
