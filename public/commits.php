@@ -5,19 +5,48 @@ declare(strict_types=1);
 require __DIR__ . '/../src/bootstrap.php';
 
 use OilApp\CommitStatsService;
+use OilApp\SettingsRepository;
 
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $basePath = $scriptDir === '/' || $scriptDir === '.' ? '' : rtrim($scriptDir, '/');
 $currentPage = 'commits';
+$settingsRepository = new SettingsRepository(__DIR__ . '/../storage/app_settings.json');
 
 $stats = null;
 $error = null;
+$message = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? 'save';
+
+    try {
+        if ($action === 'clear') {
+            $settingsRepository->clearGithubToken();
+            $message = 'GITHUB_TOKEN 已清除。';
+        } else {
+            $token = trim((string) ($_POST['github_token'] ?? ''));
+            if ($token === '') {
+                throw new RuntimeException('請先貼上 GITHUB_TOKEN。');
+            }
+
+            $settingsRepository->saveGithubToken($token);
+            $message = 'GITHUB_TOKEN 已儲存，現在可以重新抓取 Commits 統計。';
+        }
+
+        $config = array_replace_recursive($config, $settingsRepository->all());
+    } catch (Throwable $exception) {
+        $error = $exception->getMessage();
+    }
+}
 
 try {
     $stats = (new CommitStatsService($config))->fetchSummary();
 } catch (Throwable $exception) {
     $error = $exception->getMessage();
 }
+
+$tokenConfigured = trim((string) ($config['github']['token'] ?? '')) !== '';
+$showTokenPanel = $error !== null || !$tokenConfigured;
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -54,17 +83,52 @@ try {
         .nav a { text-decoration: none; color: var(--ink); padding: 10px 14px; border-radius: 999px; background: rgba(255, 252, 246, 0.75); border: 1px solid rgba(31, 42, 48, 0.08); font-weight: 700; }
         .nav a.active { background: var(--ink); color: #fff; }
         .notice { margin-bottom: 16px; padding: 14px 18px; border-radius: 16px; font-weight: 600; }
+        .notice.ok { background: rgba(26, 127, 100, 0.12); color: #0f5e4a; }
         .notice.error { background: rgba(180, 67, 67, 0.12); color: var(--danger); }
         .card { background: var(--panel); border: 1px solid rgba(31, 42, 48, 0.08); border-radius: 24px; box-shadow: var(--shadow); padding: 24px; backdrop-filter: blur(10px); }
         .hero { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 24px; }
         .metric { font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 800; color: var(--accent); line-height: 1; }
         .label { color: var(--muted); margin-top: 10px; }
         .small { font-size: 0.94rem; color: var(--muted); line-height: 1.7; }
+        .token-panel { margin-bottom: 24px; border: 1px solid rgba(26, 127, 100, 0.14); }
+        .token-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+        .token-label { display: block; font-weight: 700; margin-bottom: 8px; }
+        .token-input {
+            width: 100%;
+            min-height: 56px;
+            resize: vertical;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(31, 42, 48, 0.12);
+            font-size: 0.98rem;
+            background: #fff;
+            color: var(--ink);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+        .token-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button.primary { background: var(--ink); color: #fff; }
+        .button.secondary { background: rgba(31, 42, 48, 0.08); color: var(--ink); }
+        .token-status { margin-top: 12px; font-weight: 700; color: var(--accent); }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); vertical-align: top; }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
         a.commit-link { color: var(--accent); text-decoration: none; }
-        @media (max-width: 860px) { .topbar { align-items: flex-start; flex-direction: column; } }
+        @media (max-width: 860px) {
+            .topbar { align-items: flex-start; flex-direction: column; }
+            .token-row { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -74,12 +138,46 @@ try {
         <nav class="nav">
             <a class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/') ?>">首頁</a>
             <a class="<?= $currentPage === 'commits' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits 統計</a>
-            <a class="<?= $currentPage === 'settings' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">設定</a>
+            <a class="<?= $currentPage === 'settings' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">GitHub Token</a>
         </nav>
     </div>
 
+    <?php if ($message): ?>
+        <div class="notice ok"><?= htmlspecialchars($message) ?></div>
+    <?php endif; ?>
     <?php if ($error): ?>
         <div class="notice error"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <?php if ($showTokenPanel): ?>
+        <section class="card token-panel">
+            <h2 style="margin: 0 0 12px;">貼上 GITHUB_TOKEN</h2>
+            <p class="small">如果 GitHub API 顯示 `403`，直接把 token 貼在這裡即可。儲存後這個頁面會自動用 token 重新抓取資料。</p>
+            <form method="post">
+                <div class="token-row">
+                    <div>
+                        <label class="token-label" for="github_token">GITHUB_TOKEN</label>
+                        <textarea
+                            id="github_token"
+                            name="github_token"
+                            class="token-input"
+                            placeholder="貼上 ghp_xxx 或 github_pat_xxx"
+                            spellcheck="false"
+                            autocapitalize="off"
+                            autocomplete="off"
+                        ></textarea>
+                    </div>
+                    <div class="token-actions">
+                        <button class="button primary" type="submit" name="action" value="save">儲存 Token</button>
+                        <?php if ($tokenConfigured): ?>
+                            <button class="button secondary" type="submit" name="action" value="clear">清除 Token</button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </form>
+            <div class="token-status">目前狀態：<?= $tokenConfigured ? '已設定 Token' : '尚未設定 Token' ?></div>
+            <p class="small" style="margin-bottom: 0;">Token 會儲存在 <code>storage/app_settings.json</code>，不會放在 <code>public/</code> 裡，也不會被提交到 Git。</p>
+        </section>
     <?php endif; ?>
 
     <section class="card" style="margin-bottom: 24px;">
@@ -145,7 +243,7 @@ try {
     <?php elseif ($stats): ?>
         <section class="card">
             <p class="small" style="margin: 0;"><?= htmlspecialchars((string) $stats['message']) ?></p>
-            <p class="small" style="margin-bottom: 0;">請先確認 <code>config.php</code> 的 <code>github.username</code>，若遇到 GitHub 403，請到「設定」頁儲存 <code>GITHUB_TOKEN</code>。</p>
+            <p class="small" style="margin-bottom: 0;">請先確認 <code>config.php</code> 的 <code>github.username</code>，若遇到 GitHub 403，可直接在本頁上方貼上 <code>GITHUB_TOKEN</code>。</p>
         </section>
     <?php endif; ?>
 </div>
