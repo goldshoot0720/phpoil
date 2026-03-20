@@ -8,7 +8,7 @@ use RuntimeException;
 
 final class CommitStatsService
 {
-    private const MAX_REPOS = 100;
+    private const PER_PAGE = 100;
 
     public function __construct(
         private readonly array $config
@@ -33,14 +33,12 @@ final class CommitStatsService
             ];
         }
 
-        $repositories = $this->request(
-            sprintf('/users/%s/repos?per_page=%d&sort=updated', rawurlencode($username), self::MAX_REPOS),
-            $headers
-        );
+        $repositories = $this->fetchAllRepositories($username);
 
         $repoStats = [];
         $totalCommits = 0;
         $latestCommitAt = null;
+        $totalRepositories = count($repositories);
 
         foreach ($repositories as $repository) {
             $name = trim((string) ($repository['name'] ?? ''));
@@ -83,12 +81,41 @@ final class CommitStatsService
             'ok' => true,
             'message' => null,
             'username' => $username,
-            'repo_count' => count($repoStats),
+            'repo_count' => $totalRepositories,
+            'counted_repo_count' => count($repoStats),
             'total_commits' => $totalCommits,
             'top10_total_commits' => $top10TotalCommits,
             'top_repositories' => $topRepositories,
             'latest_commit_at' => $latestCommitAt,
         ];
+    }
+
+    private function fetchAllRepositories(string $username): array
+    {
+        $repositories = [];
+        $page = 1;
+
+        do {
+            $batch = $this->request(
+                sprintf(
+                    '/users/%s/repos?per_page=%d&sort=updated&page=%d',
+                    rawurlencode($username),
+                    self::PER_PAGE,
+                    $page
+                ),
+                $headers
+            );
+
+            if ($batch === []) {
+                break;
+            }
+
+            $repositories = array_merge($repositories, $batch);
+            $page++;
+            $hasNextPage = $this->hasNextPage($headers);
+        } while ($hasNextPage);
+
+        return $repositories;
     }
 
     private function fetchRepositoryCommitCount(string $owner, string $repo, string $branch): ?array
@@ -201,5 +228,12 @@ final class CommitStatsService
         }
 
         return (int) $matches[1];
+    }
+
+    private function hasNextPage(array $headers): bool
+    {
+        $linkHeader = $headers['link'] ?? null;
+
+        return is_string($linkHeader) && str_contains($linkHeader, 'rel="next"');
     }
 }

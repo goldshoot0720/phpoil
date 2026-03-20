@@ -84,7 +84,7 @@ try {
 
     <section class="card" style="margin-bottom: 24px;">
         <h1 style="margin: 0 0 12px;">Commits 統計</h1>
-        <p class="small">這個頁面會透過 GitHub API 讀取指定 GitHub 帳號底下的 repositories，統計全部 repos 的 commits 總和，並列出 commits 數最高的前 10 名。</p>
+        <p class="small">這個頁面會透過 GitHub API 分頁讀取指定 GitHub 帳號底下的全部 repositories，統計全部 repos 的 commits 總和，並列出 commits 數最高的前 10 名。</p>
     </section>
 
     <?php if ($stats && $stats['ok']): ?>
@@ -97,7 +97,7 @@ try {
             <div class="card">
                 <div class="metric"><?= htmlspecialchars((string) $stats['total_commits']) ?></div>
                 <div class="label">總 Commits</div>
-                <div class="small">來源：公開 repositories</div>
+                <div class="small">有 commit 的 repos：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
             </div>
             <div class="card">
                 <div class="metric"><?= htmlspecialchars((string) $stats['top10_total_commits']) ?></div>
