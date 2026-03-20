@@ -22,7 +22,10 @@ final class CommitStatsService
         if (!$forceRefresh && $this->cacheRepository !== null) {
             $cached = $this->cacheRepository->load();
             if ($this->isCacheValid($cached)) {
-                return $cached['data'];
+                $cachedData = $cached['data'];
+                $cachedData['from_cache'] = true;
+
+                return $cachedData;
             }
         }
 

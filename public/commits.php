@@ -132,6 +132,9 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
         .token-status { margin-top: 12px; font-weight: 700; color: var(--accent); }
         .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
         .toolbar-form { margin: 0; }
+        .process-list { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.8; }
+        .process-meta { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 18px; }
+        .process-pill { padding: 12px 14px; border-radius: 16px; background: rgba(31, 42, 48, 0.05); color: var(--ink); font-weight: 700; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); vertical-align: top; }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -220,6 +223,22 @@ $showTokenPanel = $error !== null || !$tokenConfigured;
                 <div class="metric"><?= htmlspecialchars((string) $stats['top10_total_commits']) ?></div>
                 <div class="label">前10合計</div>
                 <div class="small">前 10 名 repositories commits 加總</div>
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 24px;">
+            <h2 style="margin-top: 0;">統計過程</h2>
+            <ol class="process-list">
+                <li>先分頁抓取 `<?= htmlspecialchars((string) $stats['username']) ?>` 底下全部 repositories。</li>
+                <li>再逐一讀取每個 repository 的預設分支 commits 數。</li>
+                <li>把全部 repository 的 commits 加總成 `總 Commits`。</li>
+                <li>依 commits 由高到低排序後，取前 10 名再加總成 `前10合計`。</li>
+            </ol>
+            <div class="process-meta">
+                <div class="process-pill">本次抓取 repositories：<?= htmlspecialchars((string) $stats['repo_count']) ?></div>
+                <div class="process-pill">納入 commits 統計：<?= htmlspecialchars((string) $stats['counted_repo_count']) ?></div>
+                <div class="process-pill">資料來源：<?= htmlspecialchars($stats['from_cache'] ? '快取結果' : '即時抓取') ?></div>
+                <div class="process-pill">最新 commit 日期：<?= htmlspecialchars($stats['latest_commit_at'] ? date('Y-m-d H:i', strtotime((string) $stats['latest_commit_at'])) : '--') ?></div>
             </div>
         </section>
 
