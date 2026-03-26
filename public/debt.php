@@ -6,6 +6,8 @@ require __DIR__ . '/../src/bootstrap.php';
 
 use OilApp\Database;
 use OilApp\USDebtRepository;
+use OilApp\USDebtScraper;
+use OilApp\USDebtService;
 
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $basePath = $scriptDir === '/' || $scriptDir === '.' ? '' : rtrim($scriptDir, '/');
@@ -20,6 +22,27 @@ Database::ensureSchema($pdo, $driver);
 $repository = new USDebtRepository($pdo, $driver);
 $message = $_GET['message'] ?? null;
 $error = $_GET['error'] ?? null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+
+    if ($action === 'fetch') {
+        try {
+            $service = new USDebtService(
+                new USDebtScraper($config),
+                $repository
+            );
+            $record = $service->fetchAndStore();
+            $message = sprintf(
+                'US National Debt updated: %s',
+                number_format((float) $record['debt_amount'], 2)
+            );
+        } catch (Throwable $exception) {
+            $error = 'US Debt fetch failed: ' . $exception->getMessage();
+        }
+    }
+}
+
 $rows = $repository->all();
 $latest = $repository->latest();
 $recordCount = count($rows);
@@ -73,6 +96,10 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
         .notice { margin-bottom: 16px; padding: 14px 18px; border-radius: 16px; font-weight: 600; }
         .notice.ok { background: rgba(26, 127, 100, 0.12); color: #0f5e4a; }
         .notice.error { background: rgba(180, 67, 67, 0.12); color: var(--accent); }
+        .actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+        .button { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; padding: 12px 18px; font-size: 0.95rem; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; }
+        .button.secondary { background: rgba(31, 42, 48, 0.08); color: var(--ink); }
+        .hint-list { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.8; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
         .delta { display: inline-flex; margin-top: 14px; border-radius: 999px; padding: 10px 14px; font-weight: 700; background: rgba(31, 42, 48, 0.06); }
         .chart-wrap { min-height: 320px; }
@@ -111,6 +138,12 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
             <h1>US National Debt</h1>
             <p class="lead">Source: usdebtclock.org primary top-left debt counter. The page source is parsed on the server, then stored as daily history for charting.</p>
             <p class="small">Primary source target: <code>layer29</code>. This is the primary top-left debt span in the source document.</p>
+            <div class="actions">
+                <form method="post" style="margin: 0;">
+                    <button class="button" type="submit" name="action" value="fetch">Fetch latest debt</button>
+                </form>
+                <div class="pill">Auto fetch is supported through cron. Page load stays database-safe.</div>
+            </div>
         </div>
 
         <div class="card">
@@ -133,6 +166,17 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
             <div class="chart-wrap">
                 <canvas id="debtChart" height="120"></canvas>
             </div>
+        </div>
+
+        <div class="card">
+            <h2>Fetch Notes</h2>
+            <p class="small">CLI cron: <code>php cron/fetch_us_debt.php</code></p>
+            <p class="small">URL cron: <code><?= htmlspecialchars(($basePath ?: '') . '/debt_cron.php?key=' . $config['scraper']['cron_key']) ?></code></p>
+            <ul class="hint-list">
+                <li>Set hosting cron to call the URL once per day.</li>
+                <li>Recommended schedule: 13:05 Asia/Taipei or later.</li>
+                <li>The page itself stays read-only, so fetch failures do not break the dashboard.</li>
+            </ul>
         </div>
 
         <div class="card">

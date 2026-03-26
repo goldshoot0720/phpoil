@@ -6,9 +6,9 @@ require __DIR__ . '/../src/bootstrap.php';
 
 use OilApp\CronRunLogger;
 use OilApp\Database;
-use OilApp\PriceRepository;
-use OilApp\PriceScraper;
-use OilApp\PriceService;
+use OilApp\USDebtRepository;
+use OilApp\USDebtScraper;
+use OilApp\USDebtService;
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -27,17 +27,17 @@ try {
     $driver = $connection['driver'];
     Database::ensureSchema($pdo, $driver);
 
-    $service = new PriceService(
-        new PriceScraper($config),
-        new PriceRepository($pdo, $driver)
+    $service = new USDebtService(
+        new USDebtScraper($config),
+        new USDebtRepository($pdo, $driver)
     );
 
     $record = $service->fetchAndStore();
 
-    $status = $logger->log('oil_price_cron', true, 'Cron endpoint completed successfully.', [
+    $status = $logger->log('us_debt_cron', true, 'Cron endpoint completed successfully.', [
         'driver' => $driver,
         'warning' => $connection['warning'],
-        'record_date' => $record['price_date'] ?? null,
+        'record_date' => $record['snapshot_date'] ?? null,
     ]);
 
     echo json_encode([
@@ -48,6 +48,7 @@ try {
         'status' => $status,
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
+    $status = $logger->log('us_debt_cron', false, $e->getMessage());
     http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['ok' => false, 'message' => $e->getMessage(), 'status' => $status], JSON_UNESCAPED_UNICODE);
 }
