@@ -104,5 +104,24 @@ final class Database
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             SQL
         );
+
+        $pdo->exec(
+            <<<SQL
+            CREATE TABLE IF NOT EXISTS us_debt_history (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                snapshot_date DATE NOT NULL,
+                debt_amount DECIMAL(18, 2) NOT NULL,
+                debt_rate_per_second DECIMAL(18, 6) NOT NULL,
+                source_url VARCHAR(255) NOT NULL,
+                fetched_at DATETIME NOT NULL,
+                source_layer VARCHAR(32) NOT NULL,
+                source_element_id VARCHAR(64) NOT NULL,
+                raw_label VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_snapshot_date (snapshot_date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            SQL
+        );
     }
 }

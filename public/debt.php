@@ -6,8 +6,6 @@ require __DIR__ . '/../src/bootstrap.php';
 
 use OilApp\Database;
 use OilApp\USDebtRepository;
-use OilApp\USDebtScraper;
-use OilApp\USDebtService;
 
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $basePath = $scriptDir === '/' || $scriptDir === '.' ? '' : rtrim($scriptDir, '/');
@@ -22,19 +20,6 @@ Database::ensureSchema($pdo, $driver);
 $repository = new USDebtRepository($pdo, $driver);
 $message = $_GET['message'] ?? null;
 $error = $_GET['error'] ?? null;
-$latest = $repository->latest();
-$shouldRefresh = $latest === null || (($latest['snapshot_date'] ?? '') !== date('Y-m-d'));
-
-if ($shouldRefresh) {
-    try {
-        $service = new USDebtService(new USDebtScraper($config), $repository);
-        $record = $service->fetchAndStore();
-        $message = sprintf('US National Debt updated: %s', number_format((float) $record['debt_amount'], 2));
-    } catch (Throwable $exception) {
-        $error = 'US Debt fetch failed: ' . $exception->getMessage();
-    }
-}
-
 $rows = $repository->all();
 $latest = $repository->latest();
 $recordCount = count($rows);
@@ -103,9 +88,9 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
     <div class="topbar">
         <div class="brand">Oil Price Monitor</div>
         <nav class="nav">
-            <a class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/') ?>">??</a>
+            <a class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/') ?>">&#39318;&#38913;</a>
             <a class="<?= $currentPage === 'debt' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/debt.php') ?>">US Debt</a>
-            <a class="<?= $currentPage === 'commits' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits ??</a>
+            <a class="<?= $currentPage === 'commits' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits &#32113;&#35336;</a>
             <a class="<?= $currentPage === 'settings' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">GitHub Token</a>
         </nav>
     </div>
@@ -137,7 +122,7 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
                 <div class="delta"><?= htmlspecialchars($deltaLabel) ?></div>
             <?php else: ?>
                 <div class="metric">--</div>
-                <div class="small">No debt snapshot available yet.</div>
+                <div class="small">No US National Debt data has been fetched yet.</div>
             <?php endif; ?>
         </div>
     </section>
@@ -158,7 +143,7 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
                 <p class="small">Element id: <code><?= htmlspecialchars($latest['source_element_id']) ?></code></p>
                 <p class="small">Snapshots stored: <?= htmlspecialchars((string) $recordCount) ?></p>
             <?php else: ?>
-                <p class="small">No source metadata available yet.</p>
+                <p class="small">No source metadata has been fetched yet.</p>
             <?php endif; ?>
         </div>
     </section>
@@ -186,7 +171,7 @@ $debtValues = array_map(static fn (array $row): float => (float) $row['debt_amou
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="4">No snapshots stored.</td>
+                    <td colspan="4">No snapshots have been fetched yet.</td>
                 </tr>
             <?php endif; ?>
             </tbody>
