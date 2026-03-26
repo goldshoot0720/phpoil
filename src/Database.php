@@ -68,6 +68,24 @@ final class Database
                 SQL
             );
 
+            $pdo->exec(
+                <<<SQL
+                CREATE TABLE IF NOT EXISTS us_debt_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    snapshot_date TEXT NOT NULL UNIQUE,
+                    debt_amount REAL NOT NULL,
+                    debt_rate_per_second REAL NOT NULL,
+                    source_url TEXT NOT NULL,
+                    fetched_at TEXT NOT NULL,
+                    source_layer TEXT NOT NULL,
+                    source_element_id TEXT NOT NULL,
+                    raw_label TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                SQL
+            );
+
             return;
         }
 
