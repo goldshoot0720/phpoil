@@ -51,7 +51,19 @@ $latest = $repository->latest();
 $labels = array_map(static fn (array $row): string => $row['price_date'], $rows);
 $prices = array_map(static fn (array $row): float => (float) $row['marker_price'], $rows);
 $currentPage = 'dashboard';
-$showBirthdayEasterEgg = date('m-d') === '04-03';
+$birthdayEasterEggs = [
+    '04-03' => [
+        'kicker' => '04.03 Secret Drop',
+        'title' => '&#22615;&#21733;&#29983;&#26085;&#24555;&#27138;',
+        'copy' => '&#20170;&#24425;539&#38957;&#29518;&#24471;&#20027;&#37586;&#20804;&#65292;&#20170;&#22825;&#25972;&#31449;&#36914;&#20837;&#24950;&#29983;&#26085;&#27169;&#24335;&#12290;&#25171;&#38283;&#32178;&#31449;&#23601;&#31639;&#27809;&#20013;&#29518;&#65292;&#20063;&#35201;&#20808;&#25226;&#31169;&#36275;&#35588;&#24515;&#25343;&#20986;&#20358;&#12290;',
+    ],
+    '11-27' => [
+        'kicker' => '11.27 Chief Mode',
+        'title' => '&#37586;&#20804;&#29983;&#26085;&#24555;&#27138;',
+        'copy' => '&#39640;&#32771;&#19977;&#32026;&#36039;&#35338;&#34389;&#29702;&#27036;&#39318;&#37586;&#20804;&#65292;&#20170;&#22825;&#32178;&#31449;&#30452;&#25509;&#20999;&#25563;&#25104;&#24950;&#29983;&#26085;&#20896;&#36557;&#27169;&#24335;&#12290;&#38283;&#31449;&#20808;&#21521;&#22795;&#36575;&#27036;&#39318;&#21814;&#32882;&#65292;&#29992;&#26368;&#39640;&#26684;&#30340;&#29575;&#24615;&#33287;&#24515;&#24773;&#36942;&#23436;&#20170;&#22825;&#12290;',
+    ],
+];
+$birthdayEasterEgg = $birthdayEasterEggs[date('m-d')] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -216,15 +228,15 @@ $showBirthdayEasterEgg = date('m-d') === '04-03';
     <?php endif; ?>
 
 
-    <?php if ($showBirthdayEasterEgg): ?>
+    <?php if ($birthdayEasterEgg): ?>
         <section class="birthday-banner">
             <div class="birthday-confetti" aria-hidden="true">
                 <span></span><span></span><span></span><span></span>
                 <span></span><span></span><span></span><span></span>
             </div>
-            <div class="birthday-kicker">04.03 Secret Drop</div>
-            <h2 class="birthday-title">&#22615;&#21733;&#29983;&#26085;&#24555;&#27138;</h2>
-            <p class="birthday-copy">&#20170;&#24425;539&#38957;&#29518;&#24471;&#20027;&#37586;&#20804;&#65292;&#20170;&#22825;&#25972;&#31449;&#36914;&#20837;&#24950;&#29983;&#26085;&#27169;&#24335;&#12290;&#25171;&#38283;&#32178;&#31449;&#23601;&#31639;&#27809;&#20013;&#29518;&#65292;&#20063;&#35201;&#20808;&#25226;&#31169;&#36275;&#35588;&#24515;&#25343;&#20986;&#20358;&#12290;</p>
+            <div class="birthday-kicker"><?= $birthdayEasterEgg['kicker'] ?></div>
+            <h2 class="birthday-title"><?= $birthdayEasterEgg['title'] ?></h2>
+            <p class="birthday-copy"><?= $birthdayEasterEgg['copy'] ?></p>
         </section>
     <?php endif; ?>
 
