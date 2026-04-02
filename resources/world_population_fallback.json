@@ -1,0 +1,1029 @@
+{
+  "overview": {
+    "title": "World Population Clock: 8.3 Billion People (LIVE, 2026) - Worldometer",
+    "source_urls": {
+      "main": "https://www.worldometers.info/world-population/",
+      "historical": "https://www.worldometers.info/world-population/world-population-by-year/",
+      "projections": "https://www.worldometers.info/world-population/world-population-projections/"
+    },
+    "fetched_at": "2026-04-02"
+  },
+  "historical_rows": [
+    {
+      "year": 200,
+      "population": 190000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 600,
+      "population": 200000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 700,
+      "population": 210000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 800,
+      "population": 220000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 900,
+      "population": 240000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1000,
+      "population": 275000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1100,
+      "population": 320000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1200,
+      "population": 360000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1400,
+      "population": 350000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1500,
+      "population": 450000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1650,
+      "population": 500000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1700,
+      "population": 610000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1760,
+      "population": 770000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1804,
+      "population": 1000000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1850,
+      "population": 1200000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1900,
+      "population": 1600000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1927,
+      "population": 2000000000,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1950,
+      "population": 2493092848,
+      "growth": "–",
+      "net_change": "–"
+    },
+    {
+      "year": 1951,
+      "population": 2536927035,
+      "growth": "1.76%",
+      "net_change": "43,834,187"
+    },
+    {
+      "year": 1952,
+      "population": 2584086339,
+      "growth": "1.86%",
+      "net_change": "47,159,304"
+    },
+    {
+      "year": 1953,
+      "population": 2634106235,
+      "growth": "1.94%",
+      "net_change": "50,019,896"
+    },
+    {
+      "year": 1954,
+      "population": 2685894860,
+      "growth": "1.97%",
+      "net_change": "51,788,625"
+    },
+    {
+      "year": 1955,
+      "population": 2740213792,
+      "growth": "2.02%",
+      "net_change": "54,318,932"
+    },
+    {
+      "year": 1956,
+      "population": 2795409994,
+      "growth": "2.01%",
+      "net_change": "55,196,202"
+    },
+    {
+      "year": 1957,
+      "population": 2852618337,
+      "growth": "2.05%",
+      "net_change": "57,208,343"
+    },
+    {
+      "year": 1958,
+      "population": 2911249671,
+      "growth": "2.06%",
+      "net_change": "58,631,334"
+    },
+    {
+      "year": 1959,
+      "population": 2965950351,
+      "growth": "1.88%",
+      "net_change": "54,700,680"
+    },
+    {
+      "year": 1960,
+      "population": 3015470894,
+      "growth": "1.67%",
+      "net_change": "49,520,543"
+    },
+    {
+      "year": 1961,
+      "population": 3064869675,
+      "growth": "1.64%",
+      "net_change": "49,398,781"
+    },
+    {
+      "year": 1962,
+      "population": 3123374315,
+      "growth": "1.91%",
+      "net_change": "58,504,640"
+    },
+    {
+      "year": 1963,
+      "population": 3192807828,
+      "growth": "2.22%",
+      "net_change": "69,433,513"
+    },
+    {
+      "year": 1964,
+      "population": 3264487339,
+      "growth": "2.25%",
+      "net_change": "71,679,511"
+    },
+    {
+      "year": 1965,
+      "population": 3334533703,
+      "growth": "2.15%",
+      "net_change": "70,046,364"
+    },
+    {
+      "year": 1966,
+      "population": 3404041125,
+      "growth": "2.08%",
+      "net_change": "69,507,422"
+    },
+    {
+      "year": 1967,
+      "population": 3473412880,
+      "growth": "2.04%",
+      "net_change": "69,371,755"
+    },
+    {
+      "year": 1968,
+      "population": 3545187251,
+      "growth": "2.07%",
+      "net_change": "71,774,371"
+    },
+    {
+      "year": 1969,
+      "population": 3619491579,
+      "growth": "2.1%",
+      "net_change": "74,304,328"
+    },
+    {
+      "year": 1970,
+      "population": 3694683794,
+      "growth": "2.08%",
+      "net_change": "75,192,215"
+    },
+    {
+      "year": 1971,
+      "population": 3769847865,
+      "growth": "2.03%",
+      "net_change": "75,164,071"
+    },
+    {
+      "year": 1972,
+      "population": 3844917680,
+      "growth": "1.99%",
+      "net_change": "75,069,815"
+    },
+    {
+      "year": 1973,
+      "population": 3920805042,
+      "growth": "1.97%",
+      "net_change": "75,887,362"
+    },
+    {
+      "year": 1974,
+      "population": 3996416096,
+      "growth": "1.93%",
+      "net_change": "75,611,054"
+    },
+    {
+      "year": 1975,
+      "population": 4070735277,
+      "growth": "1.86%",
+      "net_change": "74,319,181"
+    },
+    {
+      "year": 1976,
+      "population": 4144246377,
+      "growth": "1.81%",
+      "net_change": "73,511,100"
+    },
+    {
+      "year": 1977,
+      "population": 4217863796,
+      "growth": "1.78%",
+      "net_change": "73,617,419"
+    },
+    {
+      "year": 1978,
+      "population": 4292097502,
+      "growth": "1.76%",
+      "net_change": "74,233,706"
+    },
+    {
+      "year": 1979,
+      "population": 4368539528,
+      "growth": "1.78%",
+      "net_change": "76,442,026"
+    },
+    {
+      "year": 1980,
+      "population": 4447606236,
+      "growth": "1.81%",
+      "net_change": "79,066,708"
+    },
+    {
+      "year": 1981,
+      "population": 4528777306,
+      "growth": "1.83%",
+      "net_change": "81,171,070"
+    },
+    {
+      "year": 1982,
+      "population": 4612673421,
+      "growth": "1.85%",
+      "net_change": "83,896,115"
+    },
+    {
+      "year": 1983,
+      "population": 4697327573,
+      "growth": "1.84%",
+      "net_change": "84,654,152"
+    },
+    {
+      "year": 1984,
+      "population": 4782175519,
+      "growth": "1.81%",
+      "net_change": "84,847,946"
+    },
+    {
+      "year": 1985,
+      "population": 4868943465,
+      "growth": "1.81%",
+      "net_change": "86,767,946"
+    },
+    {
+      "year": 1986,
+      "population": 4958072838,
+      "growth": "1.83%",
+      "net_change": "89,129,373"
+    },
+    {
+      "year": 1987,
+      "population": 5049746397,
+      "growth": "1.85%",
+      "net_change": "91,673,559"
+    },
+    {
+      "year": 1988,
+      "population": 5141992542,
+      "growth": "1.83%",
+      "net_change": "92,246,145"
+    },
+    {
+      "year": 1989,
+      "population": 5234431732,
+      "growth": "1.8%",
+      "net_change": "92,439,190"
+    },
+    {
+      "year": 1990,
+      "population": 5327803110,
+      "growth": "1.78%",
+      "net_change": "93,371,378"
+    },
+    {
+      "year": 1991,
+      "population": 5418735891,
+      "growth": "1.71%",
+      "net_change": "90,932,781"
+    },
+    {
+      "year": 1992,
+      "population": 5505989816,
+      "growth": "1.61%",
+      "net_change": "87,253,925"
+    },
+    {
+      "year": 1993,
+      "population": 5591544797,
+      "growth": "1.55%",
+      "net_change": "85,554,981"
+    },
+    {
+      "year": 1994,
+      "population": 5675551255,
+      "growth": "1.5%",
+      "net_change": "84,006,458"
+    },
+    {
+      "year": 1995,
+      "population": 5758878982,
+      "growth": "1.47%",
+      "net_change": "83,327,727"
+    },
+    {
+      "year": 1996,
+      "population": 5842055734,
+      "growth": "1.44%",
+      "net_change": "83,176,752"
+    },
+    {
+      "year": 1997,
+      "population": 5924787816,
+      "growth": "1.42%",
+      "net_change": "82,732,082"
+    },
+    {
+      "year": 1998,
+      "population": 6007066690,
+      "growth": "1.39%",
+      "net_change": "82,278,874"
+    },
+    {
+      "year": 1999,
+      "population": 6089006339,
+      "growth": "1.36%",
+      "net_change": "81,939,649"
+    },
+    {
+      "year": 2000,
+      "population": 6171702993,
+      "growth": "1.36%",
+      "net_change": "82,696,654"
+    },
+    {
+      "year": 2001,
+      "population": 6254936459,
+      "growth": "1.35%",
+      "net_change": "83,233,466"
+    },
+    {
+      "year": 2002,
+      "population": 6337730342,
+      "growth": "1.32%",
+      "net_change": "82,793,883"
+    },
+    {
+      "year": 2003,
+      "population": 6420361634,
+      "growth": "1.3%",
+      "net_change": "82,631,292"
+    },
+    {
+      "year": 2004,
+      "population": 6503377772,
+      "growth": "1.29%",
+      "net_change": "83,016,138"
+    },
+    {
+      "year": 2005,
+      "population": 6586970132,
+      "growth": "1.29%",
+      "net_change": "83,592,360"
+    },
+    {
+      "year": 2006,
+      "population": 6671452015,
+      "growth": "1.28%",
+      "net_change": "84,481,883"
+    },
+    {
+      "year": 2007,
+      "population": 6757308781,
+      "growth": "1.29%",
+      "net_change": "85,856,766"
+    },
+    {
+      "year": 2008,
+      "population": 6844457662,
+      "growth": "1.29%",
+      "net_change": "87,148,881"
+    },
+    {
+      "year": 2009,
+      "population": 6932766416,
+      "growth": "1.29%",
+      "net_change": "88,308,754"
+    },
+    {
+      "year": 2010,
+      "population": 7021732148,
+      "growth": "1.28%",
+      "net_change": "88,965,732"
+    },
+    {
+      "year": 2011,
+      "population": 7110923765,
+      "growth": "1.27%",
+      "net_change": "89,191,617"
+    },
+    {
+      "year": 2012,
+      "population": 7201202485,
+      "growth": "1.27%",
+      "net_change": "90,278,720"
+    },
+    {
+      "year": 2013,
+      "population": 7291793585,
+      "growth": "1.26%",
+      "net_change": "90,591,100"
+    },
+    {
+      "year": 2014,
+      "population": 7381616244,
+      "growth": "1.23%",
+      "net_change": "89,822,659"
+    },
+    {
+      "year": 2015,
+      "population": 7470491872,
+      "growth": "1.2%",
+      "net_change": "88,875,628"
+    },
+    {
+      "year": 2016,
+      "population": 7558554526,
+      "growth": "1.18%",
+      "net_change": "88,062,654"
+    },
+    {
+      "year": 2017,
+      "population": 7645617954,
+      "growth": "1.15%",
+      "net_change": "87,063,428"
+    },
+    {
+      "year": 2018,
+      "population": 7729902781,
+      "growth": "1.1%",
+      "net_change": "84,284,827"
+    },
+    {
+      "year": 2019,
+      "population": 7811293698,
+      "growth": "1.05%",
+      "net_change": "81,390,917"
+    },
+    {
+      "year": 2020,
+      "population": 7887001292,
+      "growth": "0.97%",
+      "net_change": "75,707,594"
+    },
+    {
+      "year": 2021,
+      "population": 7954448391,
+      "growth": "0.86%",
+      "net_change": "67,447,099"
+    },
+    {
+      "year": 2022,
+      "population": 8021407192,
+      "growth": "0.84%",
+      "net_change": "66,958,801"
+    },
+    {
+      "year": 2023,
+      "population": 8091734930,
+      "growth": "0.88%",
+      "net_change": "70,327,738"
+    },
+    {
+      "year": 2024,
+      "population": 8161972572,
+      "growth": "0.87%",
+      "net_change": "70,237,642"
+    },
+    {
+      "year": 2025,
+      "population": 8231613070,
+      "growth": "0.85%",
+      "net_change": "69,640,498"
+    },
+    {
+      "year": 2026,
+      "population": 8300678395,
+      "growth": "0.84%",
+      "net_change": "69,065,325"
+    }
+  ],
+  "projection_rows": [
+    {
+      "year": 2026,
+      "population": 8300678395,
+      "growth": "0.84%",
+      "net_change": "69,065,325"
+    },
+    {
+      "year": 2027,
+      "population": 8369094344,
+      "growth": "0.82%",
+      "net_change": "68,415,949"
+    },
+    {
+      "year": 2028,
+      "population": 8436618886,
+      "growth": "0.81%",
+      "net_change": "67,524,542"
+    },
+    {
+      "year": 2029,
+      "population": 8503285323,
+      "growth": "0.79%",
+      "net_change": "66,666,437"
+    },
+    {
+      "year": 2030,
+      "population": 8569124911,
+      "growth": "0.77%",
+      "net_change": "65,839,588"
+    },
+    {
+      "year": 2031,
+      "population": 8634119333,
+      "growth": "0.76%",
+      "net_change": "64,994,422"
+    },
+    {
+      "year": 2032,
+      "population": 8698229812,
+      "growth": "0.74%",
+      "net_change": "64,110,479"
+    },
+    {
+      "year": 2033,
+      "population": 8761449081,
+      "growth": "0.73%",
+      "net_change": "63,219,269"
+    },
+    {
+      "year": 2034,
+      "population": 8823784909,
+      "growth": "0.71%",
+      "net_change": "62,335,828"
+    },
+    {
+      "year": 2035,
+      "population": 8885210181,
+      "growth": "0.7%",
+      "net_change": "61,425,272"
+    },
+    {
+      "year": 2036,
+      "population": 8945686614,
+      "growth": "0.68%",
+      "net_change": "60,476,433"
+    },
+    {
+      "year": 2037,
+      "population": 9005152624,
+      "growth": "0.66%",
+      "net_change": "59,466,010"
+    },
+    {
+      "year": 2038,
+      "population": 9063572926,
+      "growth": "0.65%",
+      "net_change": "58,420,302"
+    },
+    {
+      "year": 2039,
+      "population": 9120928380,
+      "growth": "0.63%",
+      "net_change": "57,355,454"
+    },
+    {
+      "year": 2040,
+      "population": 9177190203,
+      "growth": "0.62%",
+      "net_change": "56,261,823"
+    },
+    {
+      "year": 2041,
+      "population": 9232281575,
+      "growth": "0.6%",
+      "net_change": "55,091,372"
+    },
+    {
+      "year": 2042,
+      "population": 9286110371,
+      "growth": "0.58%",
+      "net_change": "53,828,796"
+    },
+    {
+      "year": 2043,
+      "population": 9338661314,
+      "growth": "0.57%",
+      "net_change": "52,550,943"
+    },
+    {
+      "year": 2044,
+      "population": 9389873693,
+      "growth": "0.55%",
+      "net_change": "51,212,379"
+    },
+    {
+      "year": 2045,
+      "population": 9439639668,
+      "growth": "0.53%",
+      "net_change": "49,765,975"
+    },
+    {
+      "year": 2046,
+      "population": 9487889604,
+      "growth": "0.51%",
+      "net_change": "48,249,936"
+    },
+    {
+      "year": 2047,
+      "population": 9534545977,
+      "growth": "0.49%",
+      "net_change": "46,656,373"
+    },
+    {
+      "year": 2048,
+      "population": 9579536043,
+      "growth": "0.47%",
+      "net_change": "44,990,066"
+    },
+    {
+      "year": 2049,
+      "population": 9622824029,
+      "growth": "0.45%",
+      "net_change": "43,287,986"
+    },
+    {
+      "year": 2050,
+      "population": 9664378587,
+      "growth": "0.43%",
+      "net_change": "41,554,558"
+    },
+    {
+      "year": 2051,
+      "population": 9704192304,
+      "growth": "0.41%",
+      "net_change": "39,813,717"
+    },
+    {
+      "year": 2052,
+      "population": 9742264515,
+      "growth": "0.39%",
+      "net_change": "38,072,211"
+    },
+    {
+      "year": 2053,
+      "population": 9778614614,
+      "growth": "0.37%",
+      "net_change": "36,350,099"
+    },
+    {
+      "year": 2054,
+      "population": 9813251659,
+      "growth": "0.35%",
+      "net_change": "34,637,045"
+    },
+    {
+      "year": 2055,
+      "population": 9846237570,
+      "growth": "0.34%",
+      "net_change": "32,985,911"
+    },
+    {
+      "year": 2056,
+      "population": 9877680392,
+      "growth": "0.32%",
+      "net_change": "31,442,822"
+    },
+    {
+      "year": 2057,
+      "population": 9907637193,
+      "growth": "0.3%",
+      "net_change": "29,956,801"
+    },
+    {
+      "year": 2058,
+      "population": 9936164379,
+      "growth": "0.29%",
+      "net_change": "28,527,186"
+    },
+    {
+      "year": 2059,
+      "population": 9963337082,
+      "growth": "0.27%",
+      "net_change": "27,172,703"
+    },
+    {
+      "year": 2060,
+      "population": 9989232292,
+      "growth": "0.26%",
+      "net_change": "25,895,210"
+    },
+    {
+      "year": 2061,
+      "population": 10013916213,
+      "growth": "0.25%",
+      "net_change": "24,683,921"
+    },
+    {
+      "year": 2062,
+      "population": 10037466600,
+      "growth": "0.24%",
+      "net_change": "23,550,387"
+    },
+    {
+      "year": 2063,
+      "population": 10059950035,
+      "growth": "0.22%",
+      "net_change": "22,483,435"
+    },
+    {
+      "year": 2064,
+      "population": 10081402737,
+      "growth": "0.21%",
+      "net_change": "21,452,702"
+    },
+    {
+      "year": 2065,
+      "population": 10101849561,
+      "growth": "0.2%",
+      "net_change": "20,446,824"
+    },
+    {
+      "year": 2066,
+      "population": 10121317107,
+      "growth": "0.19%",
+      "net_change": "19,467,546"
+    },
+    {
+      "year": 2067,
+      "population": 10139808361,
+      "growth": "0.18%",
+      "net_change": "18,491,254"
+    },
+    {
+      "year": 2068,
+      "population": 10157301941,
+      "growth": "0.17%",
+      "net_change": "17,493,580"
+    },
+    {
+      "year": 2069,
+      "population": 10173782135,
+      "growth": "0.16%",
+      "net_change": "16,480,194"
+    },
+    {
+      "year": 2070,
+      "population": 10189241959,
+      "growth": "0.15%",
+      "net_change": "15,459,824"
+    },
+    {
+      "year": 2071,
+      "population": 10203681568,
+      "growth": "0.14%",
+      "net_change": "14,439,609"
+    },
+    {
+      "year": 2072,
+      "population": 10217055169,
+      "growth": "0.13%",
+      "net_change": "13,373,601"
+    },
+    {
+      "year": 2073,
+      "population": 10229327824,
+      "growth": "0.12%",
+      "net_change": "12,272,655"
+    },
+    {
+      "year": 2074,
+      "population": 10240485056,
+      "growth": "0.11%",
+      "net_change": "11,157,232"
+    },
+    {
+      "year": 2075,
+      "population": 10250496432,
+      "growth": "0.1%",
+      "net_change": "10,011,376"
+    },
+    {
+      "year": 2076,
+      "population": 10259351432,
+      "growth": "0.09%",
+      "net_change": "8,855,000"
+    },
+    {
+      "year": 2077,
+      "population": 10267045023,
+      "growth": "0.07%",
+      "net_change": "7,693,591"
+    },
+    {
+      "year": 2078,
+      "population": 10273556322,
+      "growth": "0.06%",
+      "net_change": "6,511,299"
+    },
+    {
+      "year": 2079,
+      "population": 10278887473,
+      "growth": "0.05%",
+      "net_change": "5,331,151"
+    },
+    {
+      "year": 2080,
+      "population": 10283078029,
+      "growth": "0.04%",
+      "net_change": "4,190,556"
+    },
+    {
+      "year": 2081,
+      "population": 10286161735,
+      "growth": "0.03%",
+      "net_change": "3,083,706"
+    },
+    {
+      "year": 2082,
+      "population": 10288205050,
+      "growth": "0.02%",
+      "net_change": "2,043,315"
+    },
+    {
+      "year": 2083,
+      "population": 10289247323,
+      "growth": "0.01%",
+      "net_change": "1,042,273"
+    },
+    {
+      "year": 2084,
+      "population": 10289315244,
+      "growth": "0%",
+      "net_change": "67,921"
+    },
+    {
+      "year": 2085,
+      "population": 10288456599,
+      "growth": "−0.01%",
+      "net_change": "−858,645"
+    },
+    {
+      "year": 2086,
+      "population": 10286708360,
+      "growth": "−0.02%",
+      "net_change": "−1,748,239"
+    },
+    {
+      "year": 2087,
+      "population": 10284111374,
+      "growth": "−0.03%",
+      "net_change": "−2,596,986"
+    },
+    {
+      "year": 2088,
+      "population": 10280704572,
+      "growth": "−0.03%",
+      "net_change": "−3,406,802"
+    },
+    {
+      "year": 2089,
+      "population": 10276518280,
+      "growth": "−0.04%",
+      "net_change": "−4,186,292"
+    },
+    {
+      "year": 2090,
+      "population": 10271565070,
+      "growth": "−0.05%",
+      "net_change": "−4,953,210"
+    },
+    {
+      "year": 2091,
+      "population": 10265861714,
+      "growth": "−0.06%",
+      "net_change": "−5,703,356"
+    },
+    {
+      "year": 2092,
+      "population": 10259408375,
+      "growth": "−0.06%",
+      "net_change": "−6,453,339"
+    },
+    {
+      "year": 2093,
+      "population": 10252184759,
+      "growth": "−0.07%",
+      "net_change": "−7,223,616"
+    },
+    {
+      "year": 2094,
+      "population": 10244185837,
+      "growth": "−0.08%",
+      "net_change": "−7,998,922"
+    },
+    {
+      "year": 2095,
+      "population": 10235403601,
+      "growth": "−0.09%",
+      "net_change": "−8,782,236"
+    },
+    {
+      "year": 2096,
+      "population": 10225850874,
+      "growth": "−0.09%",
+      "net_change": "−9,552,727"
+    },
+    {
+      "year": 2097,
+      "population": 10215549310,
+      "growth": "−0.1%",
+      "net_change": "−10,301,564"
+    },
+    {
+      "year": 2098,
+      "population": 10204489862,
+      "growth": "−0.11%",
+      "net_change": "−11,059,448"
+    },
+    {
+      "year": 2099,
+      "population": 10192689066,
+      "growth": "−0.12%",
+      "net_change": "−11,800,796"
+    },
+    {
+      "year": 2100,
+      "population": 10180160751,
+      "growth": "−0.12%",
+      "net_change": "−12,528,315"
+    }
+  ]
+}
