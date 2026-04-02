@@ -51,6 +51,7 @@ $latest = $repository->latest();
 $labels = array_map(static fn (array $row): string => $row['price_date'], $rows);
 $prices = array_map(static fn (array $row): float => (float) $row['marker_price'], $rows);
 $currentPage = 'dashboard';
+$showBirthdayEasterEgg = date('m-d') === '04-03';
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -100,6 +101,88 @@ $currentPage = 'dashboard';
         .notice.ok { background: rgba(26, 127, 100, 0.12); color: #0f5e4a; }
         .notice.error { background: rgba(180, 67, 67, 0.12); color: var(--danger); }
         .notice.subtle { padding: 10px 14px; font-size: 0.88rem; font-weight: 500; opacity: 0.9; }
+
+        .birthday-banner {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 18px;
+            padding: 20px 22px;
+            border-radius: 24px;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 214, 102, 0.36), transparent 26%),
+                radial-gradient(circle at 84% 22%, rgba(255, 132, 132, 0.26), transparent 24%),
+                linear-gradient(135deg, rgba(31, 42, 48, 0.96), rgba(180, 67, 67, 0.92));
+            color: #fff8ef;
+            box-shadow: 0 22px 54px rgba(121, 45, 45, 0.24);
+        }
+        .birthday-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.16) 45%, transparent 100%);
+            transform: translateX(-100%);
+            animation: birthday-shine 4.8s ease-in-out infinite;
+        }
+        .birthday-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 248, 239, 0.14);
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .birthday-title {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 6px;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            line-height: 1.05;
+        }
+        .birthday-copy {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            max-width: 44rem;
+            color: rgba(255, 248, 239, 0.88);
+            line-height: 1.75;
+            font-size: 1rem;
+        }
+        .birthday-confetti {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .birthday-confetti span {
+            position: absolute;
+            top: -24px;
+            width: 14px;
+            height: 24px;
+            border-radius: 999px;
+            opacity: 0.9;
+            animation: confetti-drop linear infinite;
+        }
+        .birthday-confetti span:nth-child(1) { left: 8%; background: #ffd166; animation-duration: 8s; animation-delay: -1s; }
+        .birthday-confetti span:nth-child(2) { left: 18%; background: #7bd389; animation-duration: 6.5s; animation-delay: -3s; }
+        .birthday-confetti span:nth-child(3) { left: 28%; background: #ff8c82; animation-duration: 7.2s; animation-delay: -2s; }
+        .birthday-confetti span:nth-child(4) { left: 39%; background: #8ad6ff; animation-duration: 8.8s; animation-delay: -4s; }
+        .birthday-confetti span:nth-child(5) { left: 52%; background: #ffe29a; animation-duration: 6.8s; animation-delay: -1.5s; }
+        .birthday-confetti span:nth-child(6) { left: 63%; background: #ff9ecb; animation-duration: 7.6s; animation-delay: -2.4s; }
+        .birthday-confetti span:nth-child(7) { left: 74%; background: #9be7a9; animation-duration: 6.2s; animation-delay: -3.4s; }
+        .birthday-confetti span:nth-child(8) { left: 86%; background: #ffd166; animation-duration: 8.3s; animation-delay: -0.8s; }
+        @keyframes confetti-drop {
+            0% { transform: translate3d(0, -30px, 0) rotate(0deg); }
+            100% { transform: translate3d(0, 180px, 0) rotate(320deg); }
+        }
+        @keyframes birthday-shine {
+            0%, 20% { transform: translateX(-100%); }
+            55%, 100% { transform: translateX(100%); }
+        }
         .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); }
@@ -130,6 +213,19 @@ $currentPage = 'dashboard';
     <?php endif; ?>
     <?php if ($warning): ?>
         <div class="notice error subtle"><?= htmlspecialchars($warning) ?></div>
+    <?php endif; ?>
+
+
+    <?php if ($showBirthdayEasterEgg): ?>
+        <section class="birthday-banner">
+            <div class="birthday-confetti" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="birthday-kicker">04.03 Secret Drop</div>
+            <h2 class="birthday-title">&#22615;&#21733;&#29983;&#26085;&#24555;&#27138;</h2>
+            <p class="birthday-copy">&#20170;&#24425;539&#38957;&#29518;&#24471;&#20027;&#37586;&#20804;&#65292;&#20170;&#22825;&#25972;&#31449;&#36914;&#20837;&#24950;&#29983;&#26085;&#27169;&#24335;&#12290;&#25171;&#38283;&#32178;&#31449;&#23601;&#31639;&#27809;&#20013;&#29518;&#65292;&#20063;&#35201;&#20808;&#25226;&#31169;&#36275;&#35588;&#24515;&#25343;&#20986;&#20358;&#12290;</p>
+        </section>
     <?php endif; ?>
 
     <section class="hero">
