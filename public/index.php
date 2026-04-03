@@ -64,6 +64,25 @@ $birthdayEasterEggs = [
     ],
 ];
 $birthdayEasterEgg = $birthdayEasterEggs[date('m-d')] ?? null;
+$fengBroAscii = <<<'ASCII'
+ _______  _______  _        _______
+(  ____ \(  ____ \( (    /|(  ____ \
+| (    \/| (    \/|  \  ( || (    \/
+| (__    | (__    |   \ | || |
+|  __)   |  __)   | (\ \) || | ____
+| (      | (      | | \   || | \_  )
+| )      | (____/\| )  \  || (___) |
+|/       (_______/|/    )_)(_______)
+
+ ______   _______  _______
+(  ___ \ (  ____ \(  ___  )
+| (   ) )| (    \/| (   ) |
+| (__/ / | (__    | |   | |
+|  __ (  |  __)   | |   | |
+| (  \ \ | (      | |   | |
+| )___) )| (____/\| (___) |
+|/ \___/ (_______/(_______)
+ASCII;
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -200,7 +219,72 @@ $birthdayEasterEgg = $birthdayEasterEggs[date('m-d')] ?? null;
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
         .small { font-size: 0.92rem; color: var(--muted); line-height: 1.7; }
-        @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+        .ascii-card {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top right, rgba(26, 127, 100, 0.22), transparent 34%),
+                linear-gradient(145deg, rgba(31, 42, 48, 0.98), rgba(46, 67, 74, 0.95));
+            color: #f4efe6;
+        }
+        .ascii-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 18px 18px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .ascii-label,
+        .ascii-copy,
+        .ascii-art {
+            position: relative;
+            z-index: 1;
+        }
+        .ascii-label {
+            display: inline-flex;
+            margin-bottom: 14px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(244, 239, 230, 0.1);
+            color: rgba(244, 239, 230, 0.8);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .ascii-copy {
+            margin: 0 0 18px;
+            max-width: 30rem;
+            color: rgba(244, 239, 230, 0.78);
+            line-height: 1.7;
+        }
+        .ascii-art {
+            margin: 0;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(12, 20, 23, 0.42);
+            border: 1px solid rgba(244, 239, 230, 0.12);
+            color: #f8d48c;
+            font-family: 'Cascadia Mono', Consolas, monospace;
+            font-size: clamp(0.53rem, 1vw, 0.82rem);
+            line-height: 1.1;
+            overflow-x: auto;
+        }
+        .ascii-art span {
+            display: inline-block;
+            min-width: max-content;
+        }
+        @media (max-width: 860px) {
+            .layout { grid-template-columns: 1fr; }
+            .ascii-art {
+                font-size: 0.5rem;
+                padding: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -266,6 +350,13 @@ $birthdayEasterEgg = $birthdayEasterEggs[date('m-d')] ?? null;
                 <div class="metric">--</div>
                 <div class="sub">目前尚未有資料，系統會在排程時間到達後自動抓取。</div>
             <?php endif; ?>
+        </div>
+
+        <div class="card ascii-card">
+            <div class="ascii-label">ASCII SIGNAL</div>
+            <h2>feng bro</h2>
+            <p class="ascii-copy">A homepage shout-out, rendered loud and clear for feng bro.</p>
+            <pre class="ascii-art" aria-label="feng bro ascii art"><span><?= htmlspecialchars($fengBroAscii) ?></span></pre>
         </div>
     </section>
 
