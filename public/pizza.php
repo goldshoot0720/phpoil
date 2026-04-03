@@ -72,7 +72,7 @@ function pizzaMetric(?int $value): string
         h1, h2, h3 { margin: 0 0 12px; }
         h1 { font-size: clamp(2.3rem, 5vw, 4.5rem); line-height: 0.95; letter-spacing: -0.04em; max-width: 9ch; }
         .lead, .small { color: var(--muted); line-height: 1.8; }
-        .hero-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+        .hero-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
         .hero-stat { padding: 16px; border-radius: 20px; background: rgba(255,255,255,0.04); }
         .hero-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
         .hero-value { margin-top: 8px; font-size: clamp(1.35rem, 2.2vw, 2.2rem); font-weight: 800; }
@@ -80,7 +80,7 @@ function pizzaMetric(?int $value): string
         .chart-wrap { min-height: 360px; }
         .stack { display: grid; gap: 16px; }
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        table { width: 100%; border-collapse: collapse; min-width: 860px; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
         th { color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; }
         .status { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
@@ -134,9 +134,14 @@ function pizzaMetric(?int $value): string
                     <div class="small">PizzINT overall index</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-label">Locations</div>
-                    <div class="hero-value"><?= htmlspecialchars((string) $data['locations_monitored']) ?></div>
-                    <div class="small">active watchlist</div>
+                    <div class="hero-label">Max Day Streak</div>
+                    <div class="hero-value"><?= htmlspecialchars((string) $data['max_day_streak']) ?></div>
+                    <div class="small">sample-derived active days</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-label">Max Week Streak</div>
+                    <div class="hero-value"><?= htmlspecialchars((string) $data['max_week_streak']) ?></div>
+                    <div class="small">sample-derived active weeks</div>
                 </div>
             </div>
         </div>
@@ -146,6 +151,7 @@ function pizzaMetric(?int $value): string
                 <div class="pill cool">Source Mode: <?= htmlspecialchars(strtoupper($data['mode'])) ?></div>
                 <h2 style="margin-top: 14px;">Latest Snapshot</h2>
                 <p class="small">Fetched at: <?= htmlspecialchars($data['fetched_at']) ?></p>
+                <p class="small">Locations monitored: <?= htmlspecialchars((string) $data['locations_monitored']) ?></p>
                 <p class="small">Open places in DEFCON calc: <?= htmlspecialchars((string) $data['open_places']) ?></p>
                 <p class="small">Active spikes: <?= htmlspecialchars((string) $data['active_spike_count']) ?></p>
             </div>
@@ -180,6 +186,24 @@ function pizzaMetric(?int $value): string
         </div>
     </section>
 
+    <section class="layout" style="margin-top: 24px;">
+        <div class="card">
+            <h2>&#36899;&#32396;&#22825;&#25976;</h2>
+            <p class="small">??? 24 ?????????????????????????? 1 ?????</p>
+            <div class="chart-wrap" style="min-height: 320px;">
+                <canvas id="pizzaDayStreakChart" height="180"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>&#36899;&#32396;&#36913;&#25976;</h2>
+            <p class="small">??????????? ISO ???????????????? 1 ?????</p>
+            <div class="chart-wrap" style="min-height: 320px;">
+                <canvas id="pizzaWeekStreakChart" height="180"></canvas>
+            </div>
+        </div>
+    </section>
+
     <section class="card" style="margin-top: 24px;">
         <h2>&#30435;&#25511;&#24215;&#23478;</h2>
         <div class="table-wrap">
@@ -190,6 +214,8 @@ function pizzaMetric(?int $value): string
                     <th>Latest</th>
                     <th>Avg 24h</th>
                     <th>Peak 24h</th>
+                    <th>Day Streak</th>
+                    <th>Week Streak</th>
                     <th>Status</th>
                     <th>Map</th>
                 </tr>
@@ -201,6 +227,8 @@ function pizzaMetric(?int $value): string
                         <td><?= htmlspecialchars(pizzaMetric($location['latest_observed'])) ?></td>
                         <td><?= htmlspecialchars(pizzaMetric($location['avg_24h'])) ?></td>
                         <td><?= htmlspecialchars(pizzaMetric($location['peak_24h'])) ?></td>
+                        <td><?= htmlspecialchars((string) $location['day_streak']) ?></td>
+                        <td><?= htmlspecialchars((string) $location['week_streak']) ?></td>
                         <td>
                             <?php if ($location['is_closed_now']): ?>
                                 <span class="status status-closed"><span class="status-dot" style="background:#ff8d8d;"></span>Closed now</span>
@@ -223,6 +251,10 @@ function pizzaMetric(?int $value): string
     const barLabels = <?= json_encode($data['bar_chart']['labels'], JSON_UNESCAPED_UNICODE) ?>;
     const barLatest = <?= json_encode($data['bar_chart']['latest'], JSON_UNESCAPED_UNICODE) ?>;
     const barBaseline = <?= json_encode($data['bar_chart']['baseline'], JSON_UNESCAPED_UNICODE) ?>;
+    const dayStreakLabels = <?= json_encode($data['day_streak_chart']['labels'], JSON_UNESCAPED_UNICODE) ?>;
+    const dayStreakValues = <?= json_encode($data['day_streak_chart']['values'], JSON_UNESCAPED_UNICODE) ?>;
+    const weekStreakLabels = <?= json_encode($data['week_streak_chart']['labels'], JSON_UNESCAPED_UNICODE) ?>;
+    const weekStreakValues = <?= json_encode($data['week_streak_chart']['values'], JSON_UNESCAPED_UNICODE) ?>;
 
     new Chart(document.getElementById('pizzaLineChart'), {
         type: 'line',
@@ -300,6 +332,52 @@ function pizzaMetric(?int $value): string
                 }
             }
         }
+    });
+
+    const streakChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: {
+                ticks: { color: '#c0b7a4', precision: 0 },
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                beginAtZero: true
+            },
+            y: {
+                ticks: { color: '#c0b7a4' },
+                grid: { display: false }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('pizzaDayStreakChart'), {
+        type: 'bar',
+        data: {
+            labels: dayStreakLabels,
+            datasets: [{
+                label: 'Consecutive active days',
+                data: dayStreakValues,
+                backgroundColor: '#ff7a59'
+            }]
+        },
+        options: streakChartOptions
+    });
+
+    new Chart(document.getElementById('pizzaWeekStreakChart'), {
+        type: 'bar',
+        data: {
+            labels: weekStreakLabels,
+            datasets: [{
+                label: 'Consecutive active weeks',
+                data: weekStreakValues,
+                backgroundColor: '#66c7f4'
+            }]
+        },
+        options: streakChartOptions
     });
 </script>
 </body>

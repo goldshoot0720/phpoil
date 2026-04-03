@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace OilApp;
 
+use DateInterval;
 use DateTimeImmutable;
+use DateTimeZone;
 use RuntimeException;
 use Throwable;
 
@@ -47,6 +49,8 @@ final class PizzintClient
             }
 
             $sparkline = [];
+            $activeDates = [];
+            $activeWeeks = [];
             foreach (($place['sparkline_24h'] ?? []) as $point) {
                 if (!is_array($point) || !array_key_exists('recorded_at', $point)) {
                     continue;
@@ -58,6 +62,11 @@ final class PizzintClient
                     'label' => $timestamp['label'],
                     'value' => $value,
                 ];
+
+                if ($value !== null && $value > 0) {
+                    $activeDates[$timestamp['date']] = true;
+                    $activeWeeks[$timestamp['week']] = true;
+                }
             }
 
             $latestObserved = null;
@@ -85,6 +94,10 @@ final class PizzintClient
                 'latest_observed' => $latestObserved,
                 'peak_24h' => $peak,
                 'avg_24h' => $count > 0 ? (int) round($sum / $count) : null,
+                'day_streak' => $this->countConsecutiveDates(array_keys($activeDates)),
+                'week_streak' => $this->countConsecutiveWeeks(array_keys($activeWeeks)),
+                'active_days_in_sample' => count($activeDates),
+                'active_weeks_in_sample' => count($activeWeeks),
                 'baseline_popular_times' => is_array($place['baseline_popular_times'] ?? null) ? $place['baseline_popular_times'] : [],
                 'sparkline_24h' => $sparkline,
             ];
@@ -115,11 +128,31 @@ final class PizzintClient
         $barValues = array_map(static fn (array $location): int => $location['latest_observed'] ?? 0, $barLocations);
         $barBaseline = array_map(static fn (array $location): int => $location['avg_24h'] ?? 0, $barLocations);
 
+        $dayStreakLocations = $locations;
+        usort($dayStreakLocations, static function (array $a, array $b): int {
+            return ($b['day_streak'] <=> $a['day_streak'])
+                ?: ($b['active_days_in_sample'] <=> $a['active_days_in_sample'])
+                ?: ($b['peak_24h'] <=> $a['peak_24h'])
+                ?: strcmp($a['name'], $b['name']);
+        });
+        $dayStreakLocations = array_values(array_slice($dayStreakLocations, 0, 8));
+
+        $weekStreakLocations = $locations;
+        usort($weekStreakLocations, static function (array $a, array $b): int {
+            return ($b['week_streak'] <=> $a['week_streak'])
+                ?: ($b['active_weeks_in_sample'] <=> $a['active_weeks_in_sample'])
+                ?: ($b['peak_24h'] <=> $a['peak_24h'])
+                ?: strcmp($a['name'], $b['name']);
+        });
+        $weekStreakLocations = array_values(array_slice($weekStreakLocations, 0, 8));
+
         $defconLevel = (int) ($dashboard['defcon_level'] ?? 4);
         $overallIndex = (int) round((float) ($dashboard['overall_index'] ?? 0));
         $details = is_array($dashboard['defcon_details'] ?? null) ? $dashboard['defcon_details'] : [];
         $activeSpikes = is_array($dashboard['active_spikes'] ?? null) ? $dashboard['active_spikes'] : [];
         $locationsMonitored = $this->extractLocationsMonitored((string) ($payload['html'] ?? '')) ?: count($locations);
+        $maxDayStreak = $locations === [] ? 0 : max(array_map(static fn (array $location): int => (int) $location['day_streak'], $locations));
+        $maxWeekStreak = $locations === [] ? 0 : max(array_map(static fn (array $location): int => (int) $location['week_streak'], $locations));
 
         return [
             'mode' => $mode,
@@ -133,6 +166,8 @@ final class PizzintClient
             'locations_monitored' => $locationsMonitored,
             'active_spike_count' => count($activeSpikes),
             'open_places' => (int) ($details['open_places'] ?? 0),
+            'max_day_streak' => $maxDayStreak,
+            'max_week_streak' => $maxWeekStreak,
             'line_chart' => [
                 'labels' => $chartLabels,
                 'datasets' => $lineDatasets,
@@ -142,13 +177,83 @@ final class PizzintClient
                 'latest' => $barValues,
                 'baseline' => $barBaseline,
             ],
+            'day_streak_chart' => [
+                'labels' => array_map(static fn (array $location): string => $location['name'], $dayStreakLocations),
+                'values' => array_map(static fn (array $location): int => (int) $location['day_streak'], $dayStreakLocations),
+            ],
+            'week_streak_chart' => [
+                'labels' => array_map(static fn (array $location): string => $location['name'], $weekStreakLocations),
+                'values' => array_map(static fn (array $location): int => (int) $location['week_streak'], $weekStreakLocations),
+            ],
             'locations' => $barLocations,
             'notes' => [
                 'PizzINT says it uses public Google Maps Popular Times signals and compares them to historical baselines, with updates around every 10 minutes.',
                 'This page parses the site-embedded initialDashboardData payload from the current HTML response, then falls back to a bundled snapshot if the live fetch fails.',
                 'The chart here shows the latest 24-hour sparkline values already embedded by PizzINT, not an independently scraped Google Maps feed.',
+                'Consecutive day and week streaks are inferred from the current 24-hour sample only. A day counts if any sample is above zero in that calendar day; a week counts if any active day falls in that ISO week.',
             ],
         ];
+    }
+
+    private function countConsecutiveDates(array $dates): int
+    {
+        $dates = array_values(array_unique(array_filter($dates)));
+        if ($dates === []) {
+            return 0;
+        }
+
+        rsort($dates, SORT_STRING);
+        $streak = 1;
+        $cursor = new DateTimeImmutable($dates[0]);
+
+        for ($i = 1, $count = count($dates); $i < $count; $i++) {
+            $expected = $cursor->sub(new DateInterval('P1D'))->format('Y-m-d');
+            if ($dates[$i] !== $expected) {
+                break;
+            }
+
+            $streak++;
+            $cursor = new DateTimeImmutable($dates[$i]);
+        }
+
+        return $streak;
+    }
+
+    private function countConsecutiveWeeks(array $weeks): int
+    {
+        $weeks = array_values(array_unique(array_filter($weeks)));
+        if ($weeks === []) {
+            return 0;
+        }
+
+        rsort($weeks, SORT_STRING);
+        $cursor = $this->weekKeyToDate($weeks[0]);
+        if ($cursor === null) {
+            return 0;
+        }
+
+        $streak = 1;
+        for ($i = 1, $count = count($weeks); $i < $count; $i++) {
+            $cursor = $cursor->sub(new DateInterval('P7D'));
+            $expected = $cursor->format('o-\\WW');
+            if ($weeks[$i] !== $expected) {
+                break;
+            }
+
+            $streak++;
+        }
+
+        return $streak;
+    }
+
+    private function weekKeyToDate(string $weekKey): ?DateTimeImmutable
+    {
+        if (!preg_match('/^(\d{4})-W(\d{2})$/', $weekKey, $matches)) {
+            return null;
+        }
+
+        return (new DateTimeImmutable('now', new DateTimeZone($this->config['timezone'])))
+            ->setISODate((int) $matches[1], (int) $matches[2]);
     }
 
     private function defconLabel(int $level): string
@@ -245,9 +350,15 @@ final class PizzintClient
     {
         try {
             $date = new DateTimeImmutable($timestamp);
-            return ['label' => $date->format('m-d H:i')];
+            $date = $date->setTimezone(new DateTimeZone($this->config['timezone']));
+
+            return [
+                'label' => $date->format('m-d H:i'),
+                'date' => $date->format('Y-m-d'),
+                'week' => $date->format('o-\\WW'),
+            ];
         } catch (Throwable) {
-            return ['label' => $timestamp];
+            return ['label' => $timestamp, 'date' => '', 'week' => ''];
         }
     }
 
