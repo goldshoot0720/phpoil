@@ -101,6 +101,27 @@ final class Database
                 SQL
             );
 
+            $pdo->exec(
+                <<<SQL
+                CREATE TABLE IF NOT EXISTS dram_ddr5_module_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    snapshot_date TEXT NOT NULL UNIQUE,
+                    item_name TEXT NOT NULL,
+                    weekly_high REAL NOT NULL,
+                    weekly_low REAL NOT NULL,
+                    session_high REAL NOT NULL,
+                    session_low REAL NOT NULL,
+                    session_average REAL NOT NULL,
+                    average_change REAL NOT NULL,
+                    source_url TEXT NOT NULL,
+                    fetched_at TEXT NOT NULL,
+                    raw_label TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                SQL
+            );
+
             return;
         }
 
@@ -151,6 +172,28 @@ final class Database
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 UNIQUE KEY unique_price_date (price_date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            SQL
+        );
+
+        $pdo->exec(
+            <<<SQL
+            CREATE TABLE IF NOT EXISTS dram_ddr5_module_prices (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                snapshot_date DATE NOT NULL,
+                item_name VARCHAR(128) NOT NULL,
+                weekly_high DECIMAL(10, 2) NOT NULL,
+                weekly_low DECIMAL(10, 2) NOT NULL,
+                session_high DECIMAL(10, 2) NOT NULL,
+                session_low DECIMAL(10, 2) NOT NULL,
+                session_average DECIMAL(10, 3) NOT NULL,
+                average_change DECIMAL(8, 2) NOT NULL,
+                source_url VARCHAR(255) NOT NULL,
+                fetched_at DATETIME NOT NULL,
+                raw_label VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_snapshot_date (snapshot_date)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             SQL
         );

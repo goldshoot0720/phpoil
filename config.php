@@ -17,6 +17,10 @@ return [
     'dated_brent' => [
         'source_url' => 'https://datahub.io/core/oil-prices/_r/-/data/brent-daily.csv',
     ],
+    'dram' => [
+        'source_url' => 'https://www.trendforce.com/price/dram/dram_spot',
+        'ddr5_16gb_item_name' => 'DDR5 UDIMM 16GB 4800/5600',
+    ],
     'scraper' => [
         'source_url' => 'https://www.gulfmerc.com/gme-product-services/gme-ace',
         'cron_key' => 'oil-monitor-20260319',

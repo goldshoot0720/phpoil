@@ -110,6 +110,7 @@ foreach ($rows as $row) {
             <a class="<?= $currentPage === 'marriage' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/marriage.php') ?>">&#26368;&#30606;&#32080;&#23130;&#29702;&#30001;</a>
             <a class="<?= $currentPage === 'dram_spot' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/dram_spot.php') ?>">DRAM Spot</a>
             <a class="<?= $currentPage === 'commits' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits &#32113;&#35336;</a>
+            <a class="<?= $currentPage === 'dram_ddr5_16gb' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/dram_ddr5_16gb.php') ?>">DDR5 16GB</a>
             <a class="<?= $currentPage === 'settings' ? 'active' : '' ?>" href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">GitHub Token</a>
         </nav>
     </div>

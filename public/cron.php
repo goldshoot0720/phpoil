@@ -9,6 +9,9 @@ use OilApp\Database;
 use OilApp\DatedBrentRepository;
 use OilApp\DatedBrentScraper;
 use OilApp\DatedBrentService;
+use OilApp\DramDdr5PriceRepository;
+use OilApp\DramDdr5PriceScraper;
+use OilApp\DramDdr5PriceService;
 use OilApp\PriceRepository;
 use OilApp\PriceScraper;
 use OilApp\PriceService;
@@ -43,11 +46,18 @@ try {
     $brentRecords = $datedBrentService->syncHistory();
     $latestBrent = end($brentRecords) ?: null;
 
+    $dramService = new DramDdr5PriceService(
+        new DramDdr5PriceScraper($config),
+        new DramDdr5PriceRepository($pdo, $driver)
+    );
+    $dramRecord = $dramService->fetchAndStore();
+
     $status = $logger->log('oil_price_cron', true, 'Cron endpoint completed successfully.', [
         'driver' => $driver,
         'warning' => $connection['warning'],
         'record_date' => $priceRecord['price_date'] ?? null,
         'dated_brent_date' => $latestBrent['price_date'] ?? null,
+        'dram_ddr5_date' => $dramRecord['snapshot_date'] ?? null,
     ]);
 
     echo json_encode([
@@ -56,6 +66,7 @@ try {
         'warning' => $connection['warning'],
         'record' => $priceRecord,
         'dated_brent' => $latestBrent,
+        'dram_ddr5' => $dramRecord,
         'status' => $status,
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

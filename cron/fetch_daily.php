@@ -8,6 +8,9 @@ use OilApp\Database;
 use OilApp\DatedBrentRepository;
 use OilApp\DatedBrentScraper;
 use OilApp\DatedBrentService;
+use OilApp\DramDdr5PriceRepository;
+use OilApp\DramDdr5PriceScraper;
+use OilApp\DramDdr5PriceService;
 use OilApp\PriceRepository;
 use OilApp\PriceScraper;
 use OilApp\PriceService;
@@ -31,6 +34,12 @@ try {
     $brentRecords = $datedBrentService->syncHistory();
     $latestBrent = end($brentRecords) ?: null;
 
+    $dramService = new DramDdr5PriceService(
+        new DramDdr5PriceScraper($config),
+        new DramDdr5PriceRepository($pdo, $driver)
+    );
+    $dramRecord = $dramService->fetchAndStore();
+
     echo sprintf(
         "[%s] Stored OQD Marker Price %s for %s using %s\n",
         date('Y-m-d H:i:s'),
@@ -47,6 +56,13 @@ try {
             $latestBrent['price_date']
         );
     }
+
+    echo sprintf(
+        "[%s] Synced DDR5 16GB Module Spot %s for %s\n",
+        date('Y-m-d H:i:s'),
+        $dramRecord['session_average'],
+        $dramRecord['snapshot_date']
+    );
 
     if ($connection['warning']) {
         echo '[WARN] ' . $connection['warning'] . PHP_EOL;
