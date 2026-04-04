@@ -259,6 +259,7 @@ ASCII;
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/dram_spot.php') ?>">DRAM Spot</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/dram_ddr5_16gb.php') ?>">DDR5 16GB</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/polymarket_iran.php') ?>">Polymarket Iran</a>
+            <a href="<?= htmlspecialchars(($basePath ?: '') . '/henren.php') ?>">一个狠人</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">GitHub Token</a>
         </nav>
     </div>
