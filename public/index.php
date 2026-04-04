@@ -296,6 +296,10 @@ ASCII;
             </div>
         </div>
 
+
+    </section>
+
+    <section class="charts-grid" style="margin-bottom: 24px;">
         <div class="card">
             <div class="eyebrow">Latest OQD</div>
             <?php if ($latest): ?>
