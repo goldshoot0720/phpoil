@@ -12,42 +12,42 @@ $channelUrl = 'https://www.youtube.com/@henren778/videos';
 $channelAvatar = 'https://yt3.ggpht.com/PYkEGqKr1tjFuHcxyZ0xf8GNMM0bjobJ2O_xELJhijAGNC2s7Rl-Y5DtdCOGbYZQCatKRy304Q=s800-c-k-c0x00ffffff-no-rj';
 $channelName = '一个狠人';
 $subscribers = 136000;
-$totalVideos = 613;
+$totalVideos = 614;
 $joinDate = '2024-06-11';
-$collapseIndex = 68.51;
+$collapseIndex = 70.07;
 $snapshotAt = '2026-04-04';
 
 $videos = [
     [
-        'title' => '2026開年暴雷！中共倒台指數飆至68.51 日企大撤離千萬人失業 出口數據造假曝光 經濟空心化政治精神分裂 習近平連聖誕老人都要抓？',
-        'url' => 'https://www.youtube.com/watch?v=v4S30Y_vYsc',
+        'title' => '中共倒台指數正式突破70大關！製造業「死亡剪刀差」、吞噬利潤、25萬...',
+        'url' => 'https://www.youtube.com/@henren778/videos',
         'thumbnail' => 'https://i.ytimg.com/vi/v4S30Y_vYsc/hqdefault.jpg',
-        'views' => 174000,
-        'published' => '2026-01-02',
-        'note' => 'Featured collapse-index episode with an explicit score of 68.51.',
+        'views' => 93000,
+        'published' => '2026-04-03',
+        'note' => 'This is the featured episode in your screenshot, showing 倒台指數 70.07.',
     ],
     [
-        'title' => 'AI的投資極限到底在哪裡？2026年的AI投資趨勢還能否延續？AI擴張的最大約束是什麼？',
-        'url' => 'https://www.youtube.com/watch?v=Y6TIe-For8E',
+        'title' => '美軍4月30日前75%概率登陸伊朗？川普喊話背後：戰略石油僅剩20天...',
+        'url' => 'https://www.youtube.com/@henren778/videos',
         'thumbnail' => 'https://i.ytimg.com/vi/Y6TIe-For8E/hqdefault.jpg',
-        'views' => 37852,
-        'published' => '2026-01-23',
-        'note' => 'Macro and AI cycle analysis video surfaced in public search results.',
+        'views' => 23000,
+        'published' => '2026-04-04',
+        'note' => 'Recent geopolitics video shown next to the collapse-index episode in your screenshot.',
     ],
     [
-        'title' => '中俄消退再掀全球獨裁政府大潰敗',
-        'url' => 'https://m.youtube.com/watch?v=wBqOgxTvVKU',
+        'title' => '中國獻忠事件全面失控！青年失業率破30%中產跌落絕望深淵，無差別...',
+        'url' => 'https://www.youtube.com/@henren778/videos',
         'thumbnail' => 'https://i.ytimg.com/vi/wBqOgxTvVKU/hqdefault.jpg',
-        'views' => 0,
-        'published' => '2026-01-11',
-        'note' => 'Referenced externally with the original mobile YouTube link.',
+        'views' => 120000,
+        'published' => '2026-04-01',
+        'note' => 'Another visible recent upload from the channel page screenshot.',
     ],
 ];
 
 $chartLabels = ['Current collapse index', 'Stability cushion'];
 $chartValues = [$collapseIndex, round(100 - $collapseIndex, 2)];
-$breakdownLabels = ['Economic hollowing', 'Employment shock', 'Export distortion', 'Political fracture'];
-$breakdownValues = [74, 69, 63, 68.51];
+$breakdownLabels = ['Manufacturing stress', 'Profit squeeze', 'Employment shock', 'Political fracture'];
+$breakdownValues = [72, 70.07, 66, 71];
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -143,7 +143,7 @@ $breakdownValues = [74, 69, 63, 68.51];
                 <img src="<?= htmlspecialchars($channelAvatar) ?>" alt="<?= htmlspecialchars($channelName) ?> avatar">
                 <div>
                     <h1><?= htmlspecialchars($channelName) ?></h1>
-                    <p class="lead">A channel page focused on this creator's macro, political, and collapse-themed videos. The featured metric here is the explicit <strong>倒台指數 68.51</strong> mentioned in a January 2026 episode.</p>
+                    <p class="lead">A channel page focused on this creator's macro, political, and collapse-themed videos. The featured metric here is the explicit <strong>倒台指數 70.07</strong> shown in the highlighted channel video.</p>
                 </div>
             </div>
             <div class="metric-grid">
@@ -170,9 +170,9 @@ $breakdownValues = [74, 69, 63, 68.51];
             <h2>Channel Snapshot</h2>
             <ul class="list">
                 <li>Snapshot date: <?= htmlspecialchars($snapshotAt) ?>.</li>
-                <li>Featured video score: 倒台指數 68.51.</li>
+                <li>Featured video score: 倒台指數 70.07.</li>
                 <li>Channel link, thumbnails, and direct video links are included below.</li>
-                <li>This page uses a public snapshot of channel metadata and externally visible video links.</li>
+                <li>This page uses a public snapshot of channel metadata and the visible videos from your screenshot.</li>
             </ul>
             <div class="source-links">
                 <a href="<?= htmlspecialchars($channelUrl) ?>" target="_blank" rel="noopener">Open YouTube channel</a>
