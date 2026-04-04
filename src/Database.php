@@ -86,6 +86,21 @@ final class Database
                 SQL
             );
 
+            $pdo->exec(
+                <<<SQL
+                CREATE TABLE IF NOT EXISTS dated_brent_prices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    price_date TEXT NOT NULL UNIQUE,
+                    spot_price REAL NOT NULL,
+                    source_url TEXT NOT NULL,
+                    fetched_at TEXT NOT NULL,
+                    raw_label TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+                SQL
+            );
+
             return;
         }
 
@@ -120,6 +135,22 @@ final class Database
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 UNIQUE KEY unique_snapshot_date (snapshot_date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            SQL
+        );
+
+        $pdo->exec(
+            <<<SQL
+            CREATE TABLE IF NOT EXISTS dated_brent_prices (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                price_date DATE NOT NULL,
+                spot_price DECIMAL(10, 2) NOT NULL,
+                source_url VARCHAR(255) NOT NULL,
+                fetched_at DATETIME NOT NULL,
+                raw_label VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_price_date (price_date)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             SQL
         );

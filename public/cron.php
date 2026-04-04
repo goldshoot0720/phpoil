@@ -6,6 +6,9 @@ require __DIR__ . '/../src/bootstrap.php';
 
 use OilApp\CronRunLogger;
 use OilApp\Database;
+use OilApp\DatedBrentRepository;
+use OilApp\DatedBrentScraper;
+use OilApp\DatedBrentService;
 use OilApp\PriceRepository;
 use OilApp\PriceScraper;
 use OilApp\PriceService;
@@ -27,24 +30,32 @@ try {
     $driver = $connection['driver'];
     Database::ensureSchema($pdo, $driver);
 
-    $service = new PriceService(
+    $priceService = new PriceService(
         new PriceScraper($config),
         new PriceRepository($pdo, $driver)
     );
+    $priceRecord = $priceService->fetchAndStore();
 
-    $record = $service->fetchAndStore();
+    $datedBrentService = new DatedBrentService(
+        new DatedBrentScraper($config),
+        new DatedBrentRepository($pdo, $driver)
+    );
+    $brentRecords = $datedBrentService->syncHistory();
+    $latestBrent = end($brentRecords) ?: null;
 
     $status = $logger->log('oil_price_cron', true, 'Cron endpoint completed successfully.', [
         'driver' => $driver,
         'warning' => $connection['warning'],
-        'record_date' => $record['price_date'] ?? null,
+        'record_date' => $priceRecord['price_date'] ?? null,
+        'dated_brent_date' => $latestBrent['price_date'] ?? null,
     ]);
 
     echo json_encode([
         'ok' => true,
         'driver' => $driver,
         'warning' => $connection['warning'],
-        'record' => $record,
+        'record' => $priceRecord,
+        'dated_brent' => $latestBrent,
         'status' => $status,
     ], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
