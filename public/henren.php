@@ -21,10 +21,9 @@ $videos = [
     [
         'title' => '中共倒台指數正式突破70大關！製造業「死亡剪刀差」、吞噬利潤、25萬...',
         'url' => 'https://www.youtube.com/@henren778/videos',
-        'thumbnail' => 'https://i.ytimg.com/vi/v4S30Y_vYsc/hqdefault.jpg',
-        'views' => 93000,
+        'views' => 94000,
         'published' => '2026-04-03',
-        'note' => 'Filtered to titles containing 倒台 only.',
+        'note' => 'Filtered to titles containing 倒台 only, and the cover is now rendered locally to match 70.07.',
     ],
 ];
 
@@ -92,7 +91,54 @@ $breakdownValues = [72, 70.07, 66, 71];
         .chart-wrap.compact { min-height: 280px; }
         .list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
         .video-card { overflow: hidden; padding: 0; max-width: 560px; }
-        .video-thumb { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #ddd; }
+        .video-thumb-render {
+            position: relative;
+            display: grid;
+            min-height: 315px;
+            padding: 26px;
+            background:
+                radial-gradient(circle at 16% 22%, rgba(255,255,255,0.08), transparent 24%),
+                linear-gradient(135deg, #16191d 0%, #2b3035 50%, #454d54 100%);
+            color: #f5efe5;
+        }
+        .video-thumb-render::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.18;
+        }
+        .thumb-kicker,
+        .thumb-score,
+        .thumb-copy { position: relative; z-index: 1; }
+        .thumb-kicker {
+            display: inline-flex;
+            align-self: start;
+            width: fit-content;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .thumb-score {
+            margin-top: auto;
+            font-size: clamp(3.6rem, 9vw, 5.6rem);
+            font-weight: 900;
+            line-height: 0.92;
+            color: #ff5a52;
+            text-shadow: 0 4px 24px rgba(255, 90, 82, 0.18);
+        }
+        .thumb-copy {
+            margin-top: 12px;
+            max-width: 18ch;
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
         .video-body { padding: 18px 18px 20px; }
         .video-title { margin: 0 0 10px; font-size: 1rem; line-height: 1.55; font-weight: 800; }
         .video-meta { color: var(--muted); font-size: 0.92rem; line-height: 1.7; margin-bottom: 10px; }
@@ -127,7 +173,7 @@ $breakdownValues = [72, 70.07, 66, 71];
                 <img src="<?= htmlspecialchars($channelAvatar) ?>" alt="<?= htmlspecialchars($channelName) ?> avatar">
                 <div>
                     <h1><?= htmlspecialchars($channelName) ?></h1>
-                    <p class="lead">This page is now filtered to show only videos whose title contains <strong>倒台</strong>. The featured metric remains the explicit <strong>倒台指數 70.07</strong> shown in the highlighted channel video.</p>
+                    <p class="lead">This page is filtered to show only videos whose title contains <strong>倒台</strong>. The featured metric remains the explicit <strong>倒台指數 70.07</strong>, and the cover is rendered locally so the image now matches the score.</p>
                 </div>
             </div>
             <div class="metric-grid">
@@ -156,7 +202,7 @@ $breakdownValues = [72, 70.07, 66, 71];
                 <li>Only keep videos whose title contains the keyword <strong>倒台</strong>.</li>
                 <li>Current filtered result count: <?= htmlspecialchars((string) count($videos)) ?>.</li>
                 <li>Featured video score: 倒台指數 70.07.</li>
-                <li>The channel link remains available for checking the full unfiltered feed.</li>
+                <li>The video cover is now generated in-page to stay visually consistent with the score.</li>
             </ul>
             <div class="source-links">
                 <a href="<?= htmlspecialchars($channelUrl) ?>" target="_blank" rel="noopener">Open YouTube channel</a>
@@ -184,7 +230,11 @@ $breakdownValues = [72, 70.07, 66, 71];
     <section class="video-grid">
         <?php foreach ($videos as $video): ?>
             <article class="card video-card">
-                <img class="video-thumb" src="<?= htmlspecialchars($video['thumbnail']) ?>" alt="<?= htmlspecialchars($video['title']) ?> thumbnail">
+                <div class="video-thumb-render" aria-label="<?= htmlspecialchars($video['title']) ?> cover">
+                    <div class="thumb-kicker">Collapse Index</div>
+                    <div class="thumb-score">70.07</div>
+                    <div class="thumb-copy">中共倒台指數<br>正式突破 70 大關</div>
+                </div>
                 <div class="video-body">
                     <h3 class="video-title"><?= htmlspecialchars($video['title']) ?></h3>
                     <div class="video-meta">
