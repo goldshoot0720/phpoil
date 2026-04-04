@@ -278,6 +278,13 @@ ASCII;
     <?php endif; ?>
 
     <section class="hero">
+        <div class="card ascii-card">
+            <div class="ascii-label">ASCII SIGNAL</div>
+            <h2>feng bro</h2>
+            <p class="ascii-copy">A homepage shout-out, rendered loud and clear for feng bro.</p>
+            <pre class="ascii-art" aria-label="feng bro ascii art"><span><?= htmlspecialchars($fengBroAscii) ?></span></pre>
+        </div>
+    
         <div class="card">
             <div class="pill">油價監控系統</div>
             <h1>OQD Daily Marker Price</h1>
@@ -313,13 +320,6 @@ ASCII;
                 <div class="metric secondary">--</div>
                 <div class="sub">尚未同步 Dated Brent 資料。</div>
             <?php endif; ?>
-        </div>
-
-        <div class="card ascii-card">
-            <div class="ascii-label">ASCII SIGNAL</div>
-            <h2>feng bro</h2>
-            <p class="ascii-copy">A homepage shout-out, rendered loud and clear for feng bro.</p>
-            <pre class="ascii-art" aria-label="feng bro ascii art"><span><?= htmlspecialchars($fengBroAscii) ?></span></pre>
         </div>
     </section>
 
