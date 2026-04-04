@@ -8,31 +8,31 @@ $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 $basePath = $scriptDir === '/' || $scriptDir === '.' ? '' : rtrim($scriptDir, '/');
 $currentPage = 'polymarket_iran';
 
-$snapshotAt = '2026-04-04 03:01 UTC';
-$totalVolume = 114896600;
-$marketOpen = '2026-01-11 15:42 ET';
+$snapshotAt = '2026-04-04 12:58 Asia/Taipei';
+$totalVolume = 115485413;
+$marketOpen = '2026-03-31 on-screen snapshot';
 $sourceUrl = 'https://polymarket.com/zh/event/us-forces-enter-iran-by';
 $outcomes = [
     [
         'label' => '2026-03-31',
         'probability' => 0.1,
-        'volume' => 72465263,
+        'volume' => 72523431,
         'yes_price' => '0.1c',
         'no_price' => '0.0c',
         'status' => 'Under review / disputed',
     ],
     [
         'label' => '2026-04-30',
-        'probability' => 85,
-        'volume' => 29808190,
-        'yes_price' => '85c',
-        'no_price' => '16c',
+        'probability' => 82,
+        'volume' => 30254847,
+        'yes_price' => '82c',
+        'no_price' => '19c',
         'status' => 'Active',
     ],
     [
         'label' => '2026-12-31',
         'probability' => 90,
-        'volume' => 10581617,
+        'volume' => 10647874,
         'yes_price' => '90c',
         'no_price' => '11c',
         'status' => 'Active',
@@ -44,6 +44,9 @@ $probabilities = array_map(static fn(array $outcome): float => (float) $outcome[
 $volumes = array_map(static fn(array $outcome): float => round($outcome['volume'] / 1000000, 2), $outcomes);
 $leader = $outcomes[2];
 $runnerUp = $outcomes[1];
+$aprilOutcome = $outcomes[1];
+$aprilYes = (float) $aprilOutcome['probability'];
+$aprilNo = 100 - $aprilYes;
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -63,6 +66,7 @@ $runnerUp = $outcomes[1];
             --teal: #1b7a69;
             --blue: #325f9f;
             --danger: #a13e3e;
+            --danger-soft: rgba(161, 62, 62, 0.12);
             --shadow: 0 18px 50px rgba(31, 42, 48, 0.12);
         }
 
@@ -97,6 +101,36 @@ $runnerUp = $outcomes[1];
         .metric-value { margin-top: 8px; font-size: clamp(1.2rem, 2vw, 2rem); font-weight: 800; }
         .flash { margin-top: 16px; padding: 14px 16px; border-radius: 18px; background: rgba(50, 95, 159, 0.10); color: #274c82; font-weight: 700; line-height: 1.65; }
         .chart-wrap { min-height: 360px; position: relative; }
+        .chart-wrap.compact { min-height: 280px; }
+        .april-meter {
+            display: grid;
+            gap: 16px;
+        }
+        .april-band {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(31, 42, 48, 0.05);
+            min-height: 54px;
+        }
+        .april-band-yes {
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            background: rgba(27, 122, 105, 0.18);
+            color: #0f5d50;
+            font-weight: 800;
+        }
+        .april-band-no {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 18px;
+            background: var(--danger-soft);
+            color: var(--danger);
+            font-weight: 800;
+        }
         .list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
         .source-links { display: grid; gap: 10px; margin-top: 14px; }
         .source-links a { color: var(--accent); text-decoration: none; font-weight: 700; }
@@ -136,15 +170,15 @@ $runnerUp = $outcomes[1];
                     <div class="metric-value"><?= htmlspecialchars($leader['label']) ?></div>
                 </div>
                 <div class="metric-box">
-                    <div class="metric-label">Leader Probability</div>
-                    <div class="metric-value"><?= htmlspecialchars(number_format($leader['probability'], 1)) ?>%</div>
+                    <div class="metric-label">4/30 Probability</div>
+                    <div class="metric-value"><?= htmlspecialchars(number_format($aprilYes, 0)) ?>%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-label">Total Volume</div>
                     <div class="metric-value">$<?= htmlspecialchars(number_format($totalVolume)) ?></div>
                 </div>
             </div>
-            <div class="flash">At this snapshot, the market leader is <strong><?= htmlspecialchars($leader['label']) ?></strong> at <strong><?= htmlspecialchars(number_format($leader['probability'], 1)) ?>%</strong>, with <strong><?= htmlspecialchars($runnerUp['label']) ?></strong> still elevated at <strong><?= htmlspecialchars(number_format($runnerUp['probability'], 0)) ?>%</strong>.</div>
+            <div class="flash">At this snapshot, <strong>2026-04-30</strong> is priced at <strong><?= htmlspecialchars(number_format($aprilYes, 0)) ?>%</strong>, with buy yes at <strong><?= htmlspecialchars($aprilOutcome['yes_price']) ?></strong> and buy no at <strong><?= htmlspecialchars($aprilOutcome['no_price']) ?></strong>.</div>
         </div>
 
         <div class="card">
@@ -172,13 +206,16 @@ $runnerUp = $outcomes[1];
         </div>
 
         <div class="card">
-            <h2>Market Context</h2>
-            <ul class="list">
-                <li>Snapshot update on source: <?= htmlspecialchars($snapshotAt) ?>.</li>
-                <li>Market open time on source: <?= htmlspecialchars($marketOpen) ?>.</li>
-                <li>Current page is a local monitoring summary, not a trading interface.</li>
-                <li>If you want, the next step can be a live scraper that refreshes this page automatically from Polymarket.</li>
-            </ul>
+            <h2>4月30日 機率圖表</h2>
+            <div class="april-meter">
+                <div class="april-band">
+                    <div class="april-band-yes" style="width: <?= htmlspecialchars((string) $aprilYes) ?>%;">Yes <?= htmlspecialchars(number_format($aprilYes, 0)) ?>%</div>
+                    <div class="april-band-no">No <?= htmlspecialchars(number_format($aprilNo, 0)) ?>%</div>
+                </div>
+                <div class="chart-wrap compact">
+                    <canvas id="aprilChart" height="120"></canvas>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -192,6 +229,7 @@ $runnerUp = $outcomes[1];
                     <th>Probability</th>
                     <th>Volume</th>
                     <th>Buy Yes</th>
+                    <th>Buy No</th>
                     <th>Status</th>
                 </tr>
                 </thead>
@@ -202,6 +240,7 @@ $runnerUp = $outcomes[1];
                         <td><?= htmlspecialchars(number_format((float) $outcome['probability'], 1)) ?>%</td>
                         <td>$<?= htmlspecialchars(number_format((float) $outcome['volume'])) ?></td>
                         <td><?= htmlspecialchars($outcome['yes_price']) ?></td>
+                        <td><?= htmlspecialchars($outcome['no_price']) ?></td>
                         <td>
                             <?php if (str_contains($outcome['status'], 'review')): ?>
                                 <span class="status-review"><?= htmlspecialchars($outcome['status']) ?></span>
@@ -218,6 +257,7 @@ $runnerUp = $outcomes[1];
         <div class="card">
             <h2>Reading Note</h2>
             <p class="small">This page uses a manually captured snapshot from the Polymarket event page for <strong>US forces enter Iran by...?</strong>. Because market odds can move quickly, treat the displayed numbers as a dated reference point rather than a live quote.</p>
+            <p class="small">The 4/30 chart specifically reflects the screenshot values you provided: <strong>Yes 82%</strong>, <strong>No 18%</strong>, <strong>Buy Yes 82c</strong>, and <strong>Buy No 19c</strong>.</p>
             <p class="small">Source snapshot observed on <?= htmlspecialchars($snapshotAt) ?> from <a href="<?= htmlspecialchars($sourceUrl) ?>" target="_blank" rel="noopener">Polymarket</a>.</p>
         </div>
     </section>
@@ -227,6 +267,8 @@ $runnerUp = $outcomes[1];
 const labels = <?= json_encode($labels, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 const probabilities = <?= json_encode($probabilities, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 const volumes = <?= json_encode($volumes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+const aprilYes = <?= json_encode($aprilYes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+const aprilNo = <?= json_encode($aprilNo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 
 new Chart(document.getElementById('probabilityChart'), {
     type: 'bar',
@@ -236,7 +278,7 @@ new Chart(document.getElementById('probabilityChart'), {
             {
                 label: 'Probability %',
                 data: probabilities,
-                backgroundColor: 'rgba(141, 91, 23, 0.72)',
+                backgroundColor: ['rgba(161, 62, 62, 0.62)', 'rgba(27, 122, 105, 0.72)', 'rgba(141, 91, 23, 0.72)'],
                 borderRadius: 8,
                 yAxisID: 'y'
             },
@@ -266,6 +308,30 @@ new Chart(document.getElementById('probabilityChart'), {
                 position: 'right',
                 grid: { drawOnChartArea: false },
                 title: { display: true, text: 'USD millions' }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('aprilChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Yes', 'No'],
+        datasets: [{
+            data: [aprilYes, aprilNo],
+            backgroundColor: ['rgba(27, 122, 105, 0.78)', 'rgba(161, 62, 62, 0.72)'],
+            borderColor: ['#1b7a69', '#a13e3e'],
+            borderWidth: 2,
+            hoverOffset: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '64%',
+        plugins: {
+            legend: {
+                position: 'bottom'
             }
         }
     }
