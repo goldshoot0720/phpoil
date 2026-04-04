@@ -24,23 +24,7 @@ $videos = [
         'thumbnail' => 'https://i.ytimg.com/vi/v4S30Y_vYsc/hqdefault.jpg',
         'views' => 93000,
         'published' => '2026-04-03',
-        'note' => 'This is the featured episode in your screenshot, showing 倒台指數 70.07.',
-    ],
-    [
-        'title' => '美軍4月30日前75%概率登陸伊朗？川普喊話背後：戰略石油僅剩20天...',
-        'url' => 'https://www.youtube.com/@henren778/videos',
-        'thumbnail' => 'https://i.ytimg.com/vi/Y6TIe-For8E/hqdefault.jpg',
-        'views' => 23000,
-        'published' => '2026-04-04',
-        'note' => 'Recent geopolitics video shown next to the collapse-index episode in your screenshot.',
-    ],
-    [
-        'title' => '中國獻忠事件全面失控！青年失業率破30%中產跌落絕望深淵，無差別...',
-        'url' => 'https://www.youtube.com/@henren778/videos',
-        'thumbnail' => 'https://i.ytimg.com/vi/wBqOgxTvVKU/hqdefault.jpg',
-        'views' => 120000,
-        'published' => '2026-04-01',
-        'note' => 'Another visible recent upload from the channel page screenshot.',
+        'note' => 'Filtered to titles containing 倒台 only.',
     ],
 ];
 
@@ -89,7 +73,7 @@ $breakdownValues = [72, 70.07, 66, 71];
         .hero, .grid, .video-grid { display: grid; gap: 24px; }
         .hero { grid-template-columns: 1.15fr 0.95fr; margin-bottom: 24px; }
         .grid { grid-template-columns: 1fr 1fr; margin-bottom: 24px; }
-        .video-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .video-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
         .card { background: var(--panel); border: 1px solid rgba(31, 42, 48, 0.08); border-radius: 24px; box-shadow: var(--shadow); padding: 24px; backdrop-filter: blur(10px); }
         .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 12px 18px; font-size: 0.92rem; font-weight: 800; background: var(--accent-soft); color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
         h1, h2, h3, p { margin-top: 0; }
@@ -107,7 +91,7 @@ $breakdownValues = [72, 70.07, 66, 71];
         .chart-wrap { min-height: 320px; position: relative; }
         .chart-wrap.compact { min-height: 280px; }
         .list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
-        .video-card { overflow: hidden; padding: 0; }
+        .video-card { overflow: hidden; padding: 0; max-width: 560px; }
         .video-thumb { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #ddd; }
         .video-body { padding: 18px 18px 20px; }
         .video-title { margin: 0 0 10px; font-size: 1rem; line-height: 1.55; font-weight: 800; }
@@ -116,7 +100,7 @@ $breakdownValues = [72, 70.07, 66, 71];
         .source-links { display: grid; gap: 10px; margin-top: 14px; }
         .source-links a { color: var(--accent); text-decoration: none; font-weight: 700; }
         @media (max-width: 1080px) {
-            .hero, .grid, .video-grid, .metric-grid { grid-template-columns: 1fr; }
+            .hero, .grid, .metric-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 860px) {
             .topbar { align-items: flex-start; flex-direction: column; }
@@ -143,7 +127,7 @@ $breakdownValues = [72, 70.07, 66, 71];
                 <img src="<?= htmlspecialchars($channelAvatar) ?>" alt="<?= htmlspecialchars($channelName) ?> avatar">
                 <div>
                     <h1><?= htmlspecialchars($channelName) ?></h1>
-                    <p class="lead">A channel page focused on this creator's macro, political, and collapse-themed videos. The featured metric here is the explicit <strong>倒台指數 70.07</strong> shown in the highlighted channel video.</p>
+                    <p class="lead">This page is now filtered to show only videos whose title contains <strong>倒台</strong>. The featured metric remains the explicit <strong>倒台指數 70.07</strong> shown in the highlighted channel video.</p>
                 </div>
             </div>
             <div class="metric-grid">
@@ -156,8 +140,8 @@ $breakdownValues = [72, 70.07, 66, 71];
                     <div class="metric-value"><?= htmlspecialchars(number_format($totalVideos)) ?></div>
                 </div>
                 <div class="metric-box">
-                    <div class="metric-label">Join Date</div>
-                    <div class="metric-value" style="font-size: 1.1rem;"><?= htmlspecialchars($joinDate) ?></div>
+                    <div class="metric-label">Filtered Items</div>
+                    <div class="metric-value"><?= htmlspecialchars((string) count($videos)) ?></div>
                 </div>
             </div>
             <div class="index-band">
@@ -167,12 +151,12 @@ $breakdownValues = [72, 70.07, 66, 71];
         </div>
 
         <div class="card">
-            <h2>Channel Snapshot</h2>
+            <h2>Filter Rule</h2>
             <ul class="list">
-                <li>Snapshot date: <?= htmlspecialchars($snapshotAt) ?>.</li>
+                <li>Only keep videos whose title contains the keyword <strong>倒台</strong>.</li>
+                <li>Current filtered result count: <?= htmlspecialchars((string) count($videos)) ?>.</li>
                 <li>Featured video score: 倒台指數 70.07.</li>
-                <li>Channel link, thumbnails, and direct video links are included below.</li>
-                <li>This page uses a public snapshot of channel metadata and the visible videos from your screenshot.</li>
+                <li>The channel link remains available for checking the full unfiltered feed.</li>
             </ul>
             <div class="source-links">
                 <a href="<?= htmlspecialchars($channelUrl) ?>" target="_blank" rel="noopener">Open YouTube channel</a>
@@ -205,9 +189,7 @@ $breakdownValues = [72, 70.07, 66, 71];
                     <h3 class="video-title"><?= htmlspecialchars($video['title']) ?></h3>
                     <div class="video-meta">
                         <div>Published: <?= htmlspecialchars($video['published']) ?></div>
-                        <?php if ($video['views'] > 0): ?>
-                            <div>Views: <?= htmlspecialchars(number_format((float) $video['views'])) ?></div>
-                        <?php endif; ?>
+                        <div>Views: <?= htmlspecialchars(number_format((float) $video['views'])) ?></div>
                     </div>
                     <p class="small"><?= htmlspecialchars($video['note']) ?></p>
                     <a class="video-link" href="<?= htmlspecialchars($video['url']) ?>" target="_blank" rel="noopener">Open video</a>
