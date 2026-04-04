@@ -255,6 +255,7 @@ ASCII;
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/pizza.php') ?>">披薩監控</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/marriage.php') ?>">最瞎結婚理由</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/commits.php') ?>">Commits 統計</a>
+            <a href="<?= htmlspecialchars(($basePath ?: '') . '/fragile_states.php') ?>">FSI China</a>
             <a href="<?= htmlspecialchars(($basePath ?: '') . '/settings.php') ?>">GitHub Token</a>
         </nav>
     </div>
