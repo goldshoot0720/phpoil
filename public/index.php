@@ -181,6 +181,7 @@ ASCII;
 
         .charts-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
         .table-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+        .market-flash { margin: 0 0 16px; padding: 14px 16px; border-radius: 18px; background: linear-gradient(135deg, rgba(180, 67, 67, 0.12), rgba(216, 155, 60, 0.14)); border: 1px solid rgba(180, 67, 67, 0.12); color: #7d2d2d; font-weight: 700; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(31, 42, 48, 0.08); }
         th { color: var(--muted); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -329,6 +330,7 @@ ASCII;
         </div>
         <div class="card">
             <h2>Dated Brent 現貨原油</h2>
+            <div class="market-flash">&#20379;&#19981;&#25033;&#27714;&#65281;&#24067;&#34349;&#29305;&#21407;&#27833;&#29694;&#36008;&#26366;&#30772;141&#32654;&#20803;&#65292;&#21109;2008&#24180;&#20197;&#20358;&#39640;&#12290;</div>
             <canvas id="datedBrentChart" height="120"></canvas>
         </div>
     </section>

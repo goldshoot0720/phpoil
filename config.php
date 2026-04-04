@@ -14,6 +14,9 @@ return [
         'charset' => 'utf8mb4',
         'sqlite_fallback' => __DIR__ . '/storage/oil_prices.sqlite',
     ],
+    'dated_brent' => [
+        'source_url' => 'https://datahub.io/core/oil-prices/_r/-/data/brent-daily.csv',
+    ],
     'scraper' => [
         'source_url' => 'https://www.gulfmerc.com/gme-product-services/gme-ace',
         'cron_key' => 'oil-monitor-20260319',
